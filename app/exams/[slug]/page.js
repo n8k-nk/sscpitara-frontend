@@ -19,14 +19,14 @@ export default async function Exam({ params }) {
   const exam = await getExam(params);
   const cgl = exam.code === "CGL";
   const coverage = cgl ? await readCoverage() : null;
-  return <><p><Link href="/exams/">All SSC exams</Link></p><p className="track">{exam.category}</p>
+  return <><Link className="back" href="/exams/">All SSC exams</Link><span className="eyebrow">{exam.category}</span>
     <h1>{exam.title}</h1>
     {exam.guidance?.qualification ? <Catalogue data={exam.guidance} /> : <section><h2>Official exam information</h2><p>Use the official SSC notices to check the current cycle, eligibility, dates and paper format.</p>
-      {exam.source_url && <p><a href={exam.source_url}>Open SSC reference</a></p>}</section>}
+      {exam.source_url && <p><a className="button secondary" href={exam.source_url}>Open SSC reference</a></p>}</section>}
     <section><h2>Preparation on SSC Pitara</h2>{cgl ? <>
       <p>Tier I covers Reasoning, General Awareness, Quantitative Aptitude and English Comprehension.</p>
       <p>{coverage.diagnostic} diagnostic questions · {coverage.practice} practice questions · {coverage.mocks} full mocks published</p>
-      <div className="actions"><a className="button" href="/study/practice/">Open CGL practice</a><Link href="/learn/">Browse lessons</Link></div>
+      <div className="actions"><a className="button arrow" href="/study/practice/">Open CGL practice</a><Link className="button secondary" href="/learn/">Browse lessons</Link></div>
     </> : <p>This exam currently has an official reference in the directory. Guided preparation currently covers CGL Tier I.</p>}</section>
   </>;
 }

@@ -5,8 +5,17 @@ export const metadata = pageMetadata("SSC exam directory", "Browse SSC exam fami
 
 export default async function Directory() {
   const exams = await readExams();
-  return <><h1>SSC exam directory</h1>{[...new Set(exams.map((exam) => exam.category))].map((category) =>
-    <section key={category}><h2>{category}</h2><div className="grid">{exams.filter((exam) => exam.category === category).map((exam) =>
-      <article key={exam.slug}><h3><Link href={`/exams/${exam.slug}/`}>{exam.code}</Link></h3><p>{exam.title}</p></article>
-    )}</div></section>)}</>;
+  return <>
+    <div className="page-head"><span className="eyebrow">Directory</span><h1>SSC exam directory</h1>
+      <p>Browse SSC exam families and open the official references.</p></div>
+    {[...new Set(exams.map((exam) => exam.category))].map((category) =>
+      <section key={category}><div className="section-head"><h2>{category}</h2></div>
+        <div className="grid">{exams.filter((exam) => exam.category === category).map((exam) =>
+          <article className="card link-card" key={exam.slug}>
+            <span className="code">{exam.code}</span>
+            <h3><Link href={`/exams/${exam.slug}/`}>{exam.title}</Link></h3>
+            <span className="go">View details</span>
+          </article>
+        )}</div></section>)}
+  </>;
 }
