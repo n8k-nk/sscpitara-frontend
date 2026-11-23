@@ -1,0 +1,28 @@
+:root{color:#19332b;background:#faf9f4;font-family:system-ui,sans-serif;line-height:1.6}
+*{box-sizing:border-box}
+body{margin:0}
+header,main,footer{width:min(100% - 2rem,70rem);margin:auto}
+header,footer,nav,.actions{display:flex;flex-wrap:wrap;align-items:center;gap:1rem}
+header,footer{justify-content:space-between;padding:1rem 0;border-block-end:1px solid #cad4cb}
+footer{justify-content:flex-start;border-block:1px solid #cad4cb 0}
+main{min-height:68vh;padding:1.5rem 0 3rem}
+a{color:#205947;text-underline-offset:.2em}
+.brand{font:700 1.6rem Georgia,serif;text-decoration:none}
+h1{font:600 clamp(2.4rem,6vw,4.8rem)/1.05 Georgia,serif;max-width:20ch}
+h2,h3,p{margin-top:0}
+section{margin:1.5rem 0}
+.hero{display:grid;grid-template-columns:2fr 1fr;gap:2rem;align-items:center;padding:1.4rem 0 2.5rem}
+aside,article{border-radius:.6rem;padding:1.3rem;background:#fffefb;border:1px solid #d6ded7}
+aside{background:#e8eee4}
+.track{color:#386445;font-weight:700}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,16rem),1fr));gap:1rem}
+article + article{margin-top:1rem}
+.grid article{margin:0}
+article p:last-child,aside p:last-child{margin:0}
+.button{background:#205947;color:white;border-radius:.4rem;padding:.6rem 1rem;text-decoration:none}
+.skip{position:absolute;left:-200vw}
+.skip:focus{left:1rem;top:1rem;background:#fff;padding:.5rem}
+:focus-visible{outline:3px solid #9a500b;outline-offset:3px}
+.lesson{white-space:pre-line}
+iframe{width:min(100%,35rem);aspect-ratio:16/9;border:0}
+@media(max-width:640px){.hero{grid-template-columns:1fr;gap:1rem}}
