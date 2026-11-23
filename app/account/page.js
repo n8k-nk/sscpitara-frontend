@@ -19,7 +19,7 @@ function Details({ data }) {
       <h3>Selection stages</h3>
       <ol className="steps">{data.stages.map((stage) => <li key={stage}>{stage}</li>)}</ol>
       <h3>Example jobs</h3>
-      <p className="muted">Starting basic pay per month under the 7th CPC.</p>
+      <p className="muted">Starting basic pay per month under the 7th Central Pay Commission (CPC).</p>
       <ul className="job-list">{data.posts.map((post, i) => <li key={i}><strong>{post.title}</strong>
         <span>{post.department}{post.group !== "Varies" && ` · Group ${post.group}`}</span>
         <span>{post.level ? `Pay Level ${post.level} · ${money(post.basic_pay)}` : "Pay varies by vacancy. See SSC notice."}</span></li>)}</ul>
@@ -27,8 +27,25 @@ function Details({ data }) {
   </details>;
 }
 
+const FIT = new Set(["match", "review", "age_review"]);
+
+function ExamCard({ row, target }) {
+  const [tone, label] = BADGE[row.status] ?? ["off", "Not a match right now"];
+  return <section id={`exam-${row.id}`} className={`match-card ${row.status}`}>
+    <div className="card-top"><h2>{row.code} <small>{row.title}</small></h2><span className={`badge ${tone}`}>{label}</span></div>
+    <p className="reason">{row.reason}</p>
+    {row.history && <p className="muted">{row.history.outcome_label}{row.history.stage && ` · ${row.history.stage}`}</p>}
+    {(row.recommended || row.history) && <p className="next">{row.next_step}</p>}
+    {(target || FIT.has(row.status)) && <Details data={row.guidance} />}
+  </section>;
+}
+
 export default async function Matches() {
-  const { learner, rows, suggestion, suggest_practice: practice } = await need("matches", "/account/");
+  const { learner, rows, targets, suggestion, suggest_practice: practice } = await need("matches", "/account/");
+  const picked = rows.filter((row) => targets.includes(row.id));
+  const others = rows.filter((row) => !targets.includes(row.id));
+  const fit = others.filter((row) => FIT.has(row.status));
+  const unfit = others.filter((row) => !FIT.has(row.status));
   return <>
     <div className="profile-head">
       <div>
@@ -43,19 +60,25 @@ export default async function Matches() {
       {suggestion ? <>
         <h3><a href={`#exam-${suggestion.id}`}>{suggestion.code} · {suggestion.title}</a></h3>
         <p>{suggestion.next_step}</p>
-        {practice && <Link className="primary-link arrow" href="/study/practice/">Open free CGL Tier I practice</Link>}
+        {practice && <Link className="primary-link arrow" href="/study/practice/">Open free SSC CGL practice</Link>}
       </> : <p>No next exam stands out from the current profile. Review the requirements below or update your profile.</p>}
     </section>
     <div className="notice"><p>Matches are an initial screen. Check the current SSC notice for the exact vacancy, nationality, proof of qualifications, age cutoff and application window.</p></div>
-    <div className="match-list">{rows.map((row) => {
-      const [tone, label] = BADGE[row.status] ?? ["off", "Outside initial screen"];
-      return <section key={row.id} id={`exam-${row.id}`} className={`match-card ${row.status}`}>
-        <div className="card-top"><h2>{row.code} <small>{row.title}</small></h2><span className={`badge ${tone}`}>{label}</span></div>
-        <p className="reason">{row.reason}</p>
-        {row.history && <p className="muted">{row.history.outcome_label}{row.history.stage && ` · ${row.history.stage}`}</p>}
-        {(row.recommended || row.history) && <p className="next">{row.next_step}</p>}
-        <Details data={row.guidance} />
-      </section>;
-    })}</div>
+
+    {picked.length > 0 && <section className="match-group">
+      <div className="section-head"><h2>Your target exams</h2><Link href="/onboarding/">Change</Link></div>
+      <div className="match-list">{picked.map((row) => <ExamCard key={row.id} row={row} target />)}</div>
+    </section>}
+
+    {fit.length > 0 && (picked.length > 0
+      ? <details className="panel match-more"><summary>Other exams you may qualify for ({fit.length})</summary>
+          <div className="panel-body"><div className="match-list">{fit.map((row) => <ExamCard key={row.id} row={row} />)}</div></div></details>
+      : <section className="match-group"><div className="section-head"><h2>Exams you may qualify for</h2></div>
+          <div className="match-list">{fit.map((row) => <ExamCard key={row.id} row={row} />)}</div></section>)}
+
+    {picked.length === 0 && fit.length === 0 && <p className="empty">None of the listed exams fit your current profile. Check your date of birth and education in <Link href="/onboarding/">your profile</Link>.</p>}
+
+    {unfit.length > 0 && <details className="disclosure"><summary>Not a match right now ({unfit.length})</summary>
+      <ul className="rows">{unfit.map((row) => <li key={row.id}><span><strong>{row.code}</strong> · {row.title}</span><span className="muted">{row.reason}</span></li>)}</ul></details>}
   </>;
 }

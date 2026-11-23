@@ -8,10 +8,10 @@ export const metadata = { title: "Base plan", robots: { index: false } };
 
 export default async function Plan() {
   const { data: d } = await call("billing/plan");
-  if (!d.enabled) return <AuthShell title={d.heading} sub={d.detail} icon="✓"><Link className="button block" href="/study/practice/">Open practice</Link></AuthShell>;
+  if (!d.enabled) return <AuthShell title={d.heading} sub={d.detail} icon="i"><Link className="button block" href="/study/practice/">Open practice</Link></AuthShell>;
   const stamp = (value) => new Date(value).toLocaleString("en-IN", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", timeZone: "Asia/Kolkata" });
   return <>
-    <div className="page-head"><span className="eyebrow">CGL Tier I</span><h1>CGL Tier I Base</h1><p>₹299 for three months. Pay once for practice, timed mocks, personal study plans and revision.</p></div>
+    <div className="page-head"><span className="eyebrow">SSC CGL · Combined Graduate Level</span><h1>CGL Tier I Base</h1><p>₹299 for three months. Pay once for practice, timed mocks, personal study plans and revision.</p></div>
     <div className="plan">
       <article className="card"><h2>Reviewed collection</h2>
         <ul className="stats"><li><strong>{d.coverage.diagnostic}</strong><span>diagnostic questions</span></li><li><strong>{d.coverage.mocks}</strong><span>complete mocks</span></li><li><strong>{d.coverage.practice}</strong><span>practice questions</span></li></ul>

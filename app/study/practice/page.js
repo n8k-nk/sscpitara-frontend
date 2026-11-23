@@ -7,7 +7,7 @@ export const metadata = { title: "Practice", robots: { index: false } };
 export default async function Practice() {
   const d = await need("study/practice", "/study/practice/");
   return <>
-    <div className="page-head"><span className="eyebrow">CGL Tier I</span><h1>Practice</h1><p>Start with the diagnostic, drill a topic or section, or sit a full timed mock.</p></div>
+    <div className="page-head"><span className="eyebrow">SSC CGL · Combined Graduate Level</span><h1>Practice</h1><p>Start with the diagnostic, drill a topic or section, or sit a full timed mock.</p></div>
     <Resume active={d.active} />
     <div className="grid two">
       {d.diagnostic_ready && <article className="card"><span className="badge ok">Free</span><h2>Free diagnostic</h2><p className="muted">20 questions across all four subjects to find your starting point.</p><Start kind="diagnostic" token={d.key} label="Start 20 questions" /></article>}

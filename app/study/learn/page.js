@@ -10,7 +10,7 @@ export default async function Learn({ searchParams }) {
   const signedIn = (await call("session")).data.authenticated;
   return <>
     <div className="section-head page-head">
-      <div><span className="eyebrow">CGL Tier I</span><h1>Learn</h1></div>
+      <div><span className="eyebrow">SSC CGL · Combined Graduate Level</span><h1>Learn</h1></div>
       <form className="select-start" method="get"><label>Language <select name="language" defaultValue={d.language}><option value="">All languages</option><option value="en">English</option><option value="hi">Hindi</option></select></label><button className="secondary">Filter lessons</button></form>
     </div>
     <div className="lessons">{d.lessons.length ? d.lessons.map((lesson) => <article className="lesson-card" key={lesson.id} lang={lesson.language}>

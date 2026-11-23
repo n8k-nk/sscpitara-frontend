@@ -11,7 +11,7 @@ export default async function Home() {
     <section className="hero">
       <div>
         <span className="eyebrow">Free SSC preparation</span>
-        <h1>Find your SSC exam. Know what to <em>prepare next.</em></h1>
+        <h1>Find your SSC exam. Know what to prepare next.</h1>
         <p className="lead">Check which exams fit your education and age, compare the jobs they lead to, and use your past results to plan your next step.</p>
         <div className="actions">
           <a className="button lg arrow" href="/signup/">Find my exam matches</a>
@@ -20,7 +20,7 @@ export default async function Home() {
         <ul className="trust"><li>Free to start</li><li>Built on official SSC notices</li><li>English and Hindi</li></ul>
       </div>
       <aside className="hero-card">
-        <h2>CGL preparation</h2>
+        <h2>SSC CGL preparation</h2><p className="muted">Combined Graduate Level, the most popular graduate-level exam.</p>
         <ul className="stats">
           <li><strong>{coverage.diagnostic}</strong><span>diagnostic questions</span></li>
           <li><strong>{coverage.practice}</strong><span>practice questions</span></li>

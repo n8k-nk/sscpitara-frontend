@@ -33,7 +33,7 @@ export function Select({ name, label, value, onChange, options, errors, placehol
 }
 
 /** Radio (single) or checkbox (multiple) choices shown as selectable tiles. */
-export function Tiles({ name, label, value, onChange, options, errors, multiple }) {
+export function Tiles({ name, label, value, onChange, options, errors, multiple, list: stacked }) {
   const list = messages(errors, name);
   const picked = multiple ? new Set((value ?? []).map(String)) : String(value ?? "");
   const toggle = (id) => {
@@ -44,14 +44,38 @@ export function Tiles({ name, label, value, onChange, options, errors, multiple 
   };
   return <div className={`profile-field${list.length ? " has-error" : ""}`}>
     <fieldset><legend>{label}</legend>
-      <div className="tiles">{options.map((o) => {
+      <div className={`tiles${stacked ? " list" : ""}`}>{options.map((o) => {
         const id = String(o.value);
         const checked = multiple ? picked.has(id) : picked === id;
         return <label className="tile" key={id}>
-          <input type={multiple ? "checkbox" : "radio"} name={name} value={id} checked={checked} onChange={() => toggle(id)} />{o.label}
+          <input type={multiple ? "checkbox" : "radio"} name={name} value={id} checked={checked} onChange={() => toggle(id)} />
+          <span className="tile-text">{o.label}{o.hint && <small>{o.hint}</small>}</span>{o.badge && <span className={`badge ${o.badge[0]}`}>{o.badge[1]}</span>}{o.tag && <span className="code">{o.tag}</span>}
         </label>;
       })}</div>
     </fieldset>
+    <Errors list={list} />
+  </div>;
+}
+
+export const duration = (minutes) => {
+  const m = Number(minutes) || 0;
+  return m < 60 ? `${m} min` : `${Math.floor(m / 60)} hr${m % 60 ? ` ${m % 60} min` : ""}`;
+};
+
+/** Minutes slider with a live readout and a few labelled stops. */
+export function Slider({ name, label, value, onChange, errors, min = 15, max = 240, step = 5, stops = [], formatValue = duration }) {
+  const list = messages(errors, name);
+  const current = Number(value) || min;
+  const top = Math.max(max, current);
+  const fill = `${((current - min) / (top - min)) * 100}%`;
+  return <div className={`profile-field${list.length ? " has-error" : ""}`}>
+    <div className="slider-head">
+      <label htmlFor={`id_${name}`}>{label}</label>
+      <output htmlFor={`id_${name}`} className="slider-value">{formatValue(current)}</output>
+    </div>
+    <input id={`id_${name}`} name={name} type="range" className="slider" min={min} max={top} step={step} value={current}
+      style={{ "--fill": fill }} aria-valuetext={formatValue(current)} onChange={(e) => onChange(e.target.value)} />
+    <div className="slider-stops" aria-hidden="true">{stops.map((m) => <span key={m}>{formatValue(m)}</span>)}</div>
     <Errors list={list} />
   </div>;
 }

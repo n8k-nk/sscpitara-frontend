@@ -5,7 +5,7 @@ export const metadata = pageMetadata("Free CGL Tier I preparation", "See publish
 export default async function Plans() {
   const coverage = await readCoverage();
   return <>
-    <div className="page-head"><span className="eyebrow">Free</span><h1>Free CGL Tier I preparation</h1>
+    <div className="page-head"><span className="eyebrow">Free</span><h1>Free SSC CGL preparation</h1>
       <p>Access all published preparation materials for free.</p></div>
     <ul className="stats">
       <li><strong>{coverage.diagnostic}</strong><span>free diagnostic questions</span></li>

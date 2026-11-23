@@ -1,4 +1,4 @@
-export const BENEFITS = ["Exam matches from your education and age", "Free CGL Tier I diagnostic and practice", "Timed mocks with explanations", "Revision of the questions you missed"];
+export const BENEFITS = ["Exam matches from your education and age", "Free SSC CGL (Combined Graduate Level) diagnostic and practice", "Timed mocks with explanations", "Revision of the questions you missed"];
 
 /** Two-column auth layout (card + benefits) or a single centred card. */
 export default function AuthShell({ title, sub, children, aside, switchTo, icon }) {

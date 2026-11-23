@@ -5,7 +5,7 @@ export const metadata = pageMetadata("Free SSC CGL lessons", "Study SSC CGL topi
 export default async function Learn() {
   const lessons = await readLessons();
   return <>
-    <div className="page-head"><span className="eyebrow">CGL Tier I</span><h1>Free SSC CGL lessons</h1>
+    <div className="page-head"><span className="eyebrow">SSC CGL · Combined Graduate Level</span><h1>Free SSC CGL lessons</h1>
       <p>Reviewed explanations and curated videos, organised by topic.</p></div>
     <div className="lessons">{lessons.length ? lessons.map((lesson) =>
       <article className="lesson-card" key={lesson.id} lang={lesson.language}>

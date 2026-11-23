@@ -25,7 +25,7 @@ export default function Catalogue({ data }) {
     </section>
     <section>
       <h2>Example jobs</h2>
-      <p>Starting basic monthly pay under the 7th CPC. Check post availability in the recruitment notice.</p>
+      <p>Starting basic monthly pay under the 7th Central Pay Commission (CPC). Check post availability in the recruitment notice.</p>
       <div className="grid">{data.posts.map((post, i) => <article className="card" key={i}>
         <h3>{post.title}</h3>
         <p>{post.department}{post.group !== "Varies" && ` · Group ${post.group}`}</p>

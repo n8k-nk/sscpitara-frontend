@@ -6,7 +6,7 @@ export const metadata = { title: "Progress", robots: { index: false } };
 export default async function Progress() {
   const d = await need("study/progress", "/study/progress/");
   return <>
-    <div className="page-head"><span className="eyebrow">CGL Tier I</span><h1>Progress</h1></div>
+    <div className="page-head"><span className="eyebrow">SSC CGL · Combined Graduate Level</span><h1>Progress</h1></div>
     <div className="grid two">
       <article className="card"><h2>First-attempt accuracy</h2>
         {d.topics.length ? d.topics.map((row) => <div className="meter-row" key={row.topic}><strong>{row.topic}</strong><span>{row.accuracy}%</span>

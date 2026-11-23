@@ -6,7 +6,7 @@ import { need } from "../../lib/server";
 export const metadata = { title: "Today", robots: { index: false } };
 
 const Task = ({ icon, accent, title, children, action }) => <article className={`task${accent ? " accent" : ""}`}>
-  <span className="icon" aria-hidden="true">{icon}</span><div><h2>{title}</h2><p>{children}</p></div>{action}</article>;
+  <div><h2>{title}</h2><p>{children}</p></div>{action}</article>;
 
 export default async function Today() {
   const d = await need("study/today", "/study/");
@@ -15,7 +15,7 @@ export default async function Today() {
       <div>
         <span className="eyebrow">{new Date().toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", timeZone: "Asia/Kolkata" })}</span>
         <h1>Today</h1>
-        {!d.other_target && <p className="muted">{d.minutes} minutes available for CGL Tier I. <Link href="/onboarding/">Change time</Link></p>}
+        {!d.other_target && <p className="muted">{d.minutes} minutes a day for SSC CGL (Combined Graduate Level) practice. <Link href="/onboarding/">Change time</Link></p>}
       </div>
       <div className="actions"><Link className="button secondary" href="/account/">See my exam matches and next steps</Link></div>
     </div>
