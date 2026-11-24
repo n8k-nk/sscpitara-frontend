@@ -1,0 +1,23 @@
+import { notFound } from "next/navigation";
+import { metadata as pageMetadata } from "../../../lib/public";
+import { examBySlug, getOverview } from "../../../lib/pyq";
+import { Crumbs, ExamLanding } from "../_ui";
+
+const load = async (slug) => examBySlug(await getOverview(true), slug);
+
+export async function generateMetadata({ params }) {
+  const exam = await load((await params).exam);
+  if (!exam) return {};
+  const years = exam.years.map((y) => y.year).join(", ");
+  return pageMetadata(`SSC ${exam.code} previous year question papers with answers (${years})`,
+    `Free SSC ${exam.code} previous year papers: ${exam.years.reduce((s, y) => s + y.papers.length, 0)} shifts and ${exam.questions.toLocaleString("en-IN")} questions with answers, by year, date and shift.`, `/pyq/${exam.slug}/`);
+}
+
+export default async function ExamPage({ params }) {
+  const exam = await load((await params).exam);
+  if (!exam) notFound();
+  return <>
+    <Crumbs trail={[{ name: "PYQs", href: "/pyq/" }, { name: `SSC ${exam.code}`, href: `/pyq/${exam.slug}/` }]} />
+    <ExamLanding exam={exam} />
+  </>;
+}

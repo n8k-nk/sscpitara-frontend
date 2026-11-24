@@ -12,8 +12,13 @@ const img = ({ src, alt }) => typeof src === "string" && src.startsWith("/media/
   ? <a href={src} target="_blank" rel="noopener"><img className="diagram" src={src} alt={alt ?? ""} loading="lazy" /></a>
   : null;
 
-export default function Rich({ children, inline = false }) {
+export default function Rich({ children, inline = false, interactive = true }) {
   if (!children) return null;
-  const components = inline ? { img, p: ({ children }) => <>{children}</> } : { img };
+  const components = {
+    img: interactive ? img : ({ src, alt }) => typeof src === "string" && src.startsWith("/media/")
+      ? <img className="diagram" src={src} alt={alt ?? ""} /> : null,
+    ...(!interactive && { a: ({ children }) => <>{children}</> }),
+    ...(inline && { p: ({ children }) => <>{children}</> }),
+  };
   return <Markdown remarkPlugins={remark} rehypePlugins={rehype} components={components}>{children}</Markdown>;
 }

@@ -16,6 +16,7 @@ export default async function Progress() {
         {d.reviews.length ? <ul className="rows">{d.reviews.map((row, i) => <li key={i}><span>{row.topic}</span><span className="muted">Due {day(row.due)}</span></li>)}</ul> : <p className="empty">Your revision queue is clear.</p>}</article>
     </div>
     <section style={{ marginTop: "1.5rem" }}><article className="card"><h2>Completed attempts</h2>
-      {d.attempts.length ? <ul className="rows">{d.attempts.map((a) => <li key={a.id}><Link href={`/study/attempt/${a.id}/results/`}>{a.title}</Link><span className="muted">{day(a.finished)} · <strong>{a.score} marks</strong></span></li>)}</ul> : <p className="empty">No completed attempts yet.</p>}</article></section>
+      {d.attempts.length ? <ul className="rows">{d.attempts.map((a) => <li key={a.id}><Link href={`/study/attempt/${a.id}/results/`}>{a.title}</Link>
+        <span className="muted">{a.kind === "pyq-mock" && "PYQ mock · "}{day(a.finished)} · <strong>{a.score} marks</strong></span></li>)}</ul> : <p className="empty">No completed attempts yet.</p>}</article></section>
   </>;
 }
