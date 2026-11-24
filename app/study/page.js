@@ -27,7 +27,7 @@ export default async function Today() {
         {d.review_limit > 0 && <Task icon="↺" title="Due for revision" action={<Start kind="revision" token={d.key} limit={d.review_limit} label="Start revision" />}>Revisit up to {d.review_limit} previously missed questions.</Task>}
         {d.topic && <Task icon="✎" title={d.topic} action={<Start kind="topic" token={d.key} topic={d.topic} limit={d.limit} label="Practise this topic" />}>{d.weak ? "Your first-attempt results suggest practising this topic." : "Start here to build your topic history."} Practise up to {d.limit} questions within your time budget.</Task>}
       </>}
-      <Task icon="▤" title="Lessons" action={<Link className="button secondary" href="/study/learn/">Browse lessons</Link>}>Read reviewed explanations and watch curated videos by topic.</Task>
+      <Task icon="▤" title="Lessons" action={<Link className="button secondary" href="/learn/">Open the CGL course</Link>}>Follow the CGL path: free videos from several teachers and notes, topic by topic. Tick off what you already know.</Task>
     </div>
   </>;
 }
