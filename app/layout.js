@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
 import { site, indexable } from "../lib/public";
 import { session } from "../lib/server";
 import SignOut from "../components/SignOut";
+import ThemeToggle from "../components/ThemeToggle";
 import Capture from "../components/Capture";
 import { NavLink } from "../components/Nav";
 import "katex/dist/katex.min.css";
@@ -13,19 +15,22 @@ export const metadata = {
   robots: indexable ? { index: true, follow: true } : { index: false, follow: false },
 };
 
-export const viewport = { themeColor: "#ffffff" };
+const themeOf = async () => ((await cookies()).get("theme")?.value === "light" ? "light" : "dark");
 
-const Mark = () => <span className="mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 10h18v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><path d="M3 10V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v3" /><path d="M10 10v3h4v-3" /></svg></span>;
+export async function generateViewport() {
+  return { themeColor: (await themeOf()) === "light" ? "#ffffff" : "#0a0a0a" };
+}
+
 
 export default async function Layout({ children }) {
   const user = await session();
-  return <html lang="en"><body>
+  const theme = await themeOf();
+  return <html lang="en" data-theme={theme} suppressHydrationWarning><body>
     <Capture />
     <a className="skip" href="#main">Skip to content</a>
     <header className="site-header"><div className="bar">
-      <Link className="brand" href="/"><Mark />SSC Pitara</Link>
+      <Link className="brand" href="/"><img src="/icon.svg#signature" width="48" height="40" alt="" /><span className="brand-name"><b>SSC</b> Pitara</span></Link>
       <nav className="site-nav" aria-label="Main">
-        <NavLink href="/exams/" match={["/exams"]}>Exams</NavLink>
         <NavLink href="/pyq/" match={["/pyq"]}>PYQs</NavLink>
         <NavLink href="/learn/" match={["/learn", "/study/learn"]}>Learn</NavLink>
         {user.authenticated ? <>
@@ -39,6 +44,7 @@ export default async function Layout({ children }) {
           <span className="divider" aria-hidden="true" />
           <NavLink href="/signin/">Sign in</NavLink><Link className="nav-cta" href="/signup/">Sign up</Link>
         </>}
+        <ThemeToggle />
       </nav>
     </div></header>
     <main id="main">{children}</main>

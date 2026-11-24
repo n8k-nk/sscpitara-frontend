@@ -28,3 +28,6 @@ npm run dev
 Open http://127.0.0.1:3000/. For a production build configure DJANGO_ORIGIN as the internal backend origin and SITE_URL as the canonical public HTTPS origin before running npm run build and npm start. Set Django PUBLIC_FRONTEND_URL and DJANGO_CSRF_TRUSTED_ORIGINS to the matching public origin. Set the Django allowed hosts for the deployed backend and forward protected routes through the same public origin. Local frontend pages send noindex. The production sitemap lists published exam pages and the public learning and study coverage pages.
 
 The Next.js pages replace the Django directory template. The learner area, forms, pass management and admin use the existing Django views until those workflows have React equivalents.
+
+
+The [admin workspace](http://127.0.0.1:3000/admin/workspace/) uses Django staff sign-in. Frontend admin pages live in `app/admin/workspace/`. Each module uses permission-checked Django endpoints. Create your first staff administrator interactively with `.venv/bin/python manage.py createsuperuser` from the backend repository.

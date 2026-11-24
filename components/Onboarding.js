@@ -31,7 +31,7 @@ const STEPS = [
   { short: "Education", title: "What’s your education?", hint: "Pick the highest level you’ve completed." },
   { short: "Age", title: "How old are you?", hint: "Exams have age limits. We only use this to check them." },
   { short: "Preparation", title: "How are you preparing?", hint: "This sets your daily study plan." },
-  { short: "Pick exams", title: "Which exams interest you?", hint: "Optional. Not sure? Skip it and we’ll suggest exams that fit your profile." },
+  { short: "Pick exam", title: "Which exam interests you?", hint: "Choose one exam. You can change it later in your profile, or skip this step for suggestions." },
   { short: "Your exams", title: "What you get if you clear", hint: "The post you can land, your starting salary, what the job lets you do, and what each stage unlocks." },
 ];
 // Which step each server-validated field lives on, so errors can send you back to it.
@@ -51,6 +51,7 @@ function check(step, v) {
     const n = Number(v.daily_minutes);
     if (!Number.isInteger(n) || n < 5 || n > 720) e.daily_minutes = ["Enter between 5 and 720 minutes."];
   }
+  if (step === 3 && v.target_exams.length > 1) e.target_exams = ["Choose one exam to continue, or skip this step."];
   return e;
 }
 
@@ -157,13 +158,14 @@ export default function Onboarding({ initial, options, exists }) {
           </>}
 
           {step === 3 && <>
-            <Tiles {...common("target_exams")} label="Exams you’re interested in" multiple list
+            {values.target_exams.length > 1 && <p className="notice">Your profile has multiple saved exams. Choose the one you want to focus on.</p>}
+            <Tiles {...common("target_exams")} label="Target exam (optional)" list
+              value={values.target_exams.length === 1 ? values.target_exams[0] : ""}
+              onChange={(id) => set("target_exams")([id])}
               options={[...options.exams].sort((a, b) => rank(a) - rank(b))
                 .map((e) => ({ value: e.id, label: e.title, tag: e.code, badge: STATUS[status[String(e.id)]?.status] }))} />
-            {values.target_exams.map((id) => status[String(id)]).filter((r) => r && !FIT.includes(r.status)).map((r) =>
+            {values.target_exams.length === 1 && values.target_exams.map((id) => status[String(id)]).filter((r) => r && !FIT.includes(r.status)).map((r) =>
               <Insight key={r.id} title={`Heads up: ${r.code} doesn’t fit right now`}><p>{r.reason}</p></Insight>)}
-            {values.target_exams.length > 0 && values.target_exams.every((id) => FIT.includes(status[String(id)]?.status)) &&
-              <Insight title="All your chosen exams fit your profile"><p>We’ll show them first on your matches page.</p></Insight>}
             <Tiles {...common("language")} label="Study language" options={options.language} />
           </>}
 
@@ -192,7 +194,7 @@ export default function Onboarding({ initial, options, exists }) {
         <div className="wz-actions">
           {step > 0 ? <button type="button" className="secondary" onClick={() => { setErrors({}); setStep(step - 1); }}>Back</button> : <span />}
           <div className="wz-right">
-            {step === 3 && <button type="button" className="ghost" onClick={() => setStep(4)}>Skip</button>}
+            {step === 3 && <button type="button" className="ghost" onClick={() => { set("target_exams")([]); setStep(4); }}>Skip</button>}
             <button type="submit" className="lg" disabled={busy}>{last ? (busy ? "Saving…" : "Continue to dashboard") : "Continue"}</button>
           </div>
         </div>

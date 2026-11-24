@@ -1,1 +1,34 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#1d4ed8"/><g transform="translate(5 5) scale(.917)" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h18v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M3 10V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v3"/><path d="M10 10v3h4v-3"/></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 80">
+  <title>SSC Pitara monogram</title>
+  <defs>
+    <path id="sp" d="M29 13h37c13 0 21 7 21 19s-9 21-22 21h-2v19H50V31h13v10h2c5 0 8-4 8-9s-3-7-8-7H29c-4 0-6 2-6 5 0 2 2 4 5 5l6 2c9 3 13 8 13 16 0 12-8 19-21 19H4l4-13h19c4 0 6-2 6-5 0-2-1-4-5-5l-7-2C12 44 8 39 8 31c0-11 8-18 21-18Z"/>
+    <mask id="ink" maskUnits="userSpaceOnUse" x="0" y="0" width="96" height="80">
+      <g fill="none" stroke="white" stroke-width="19" stroke-linecap="square">
+        <path class="ribbon" pathLength="1" d="M4 66h23c9 0 13-5 13-12 0-6-4-9-12-12l-4-1c-7-2-9-6-9-11 0-7 6-11 14-11h37c10 0 14 5 14 13 0 9-6 15-15 15h-8"/>
+        <path class="stem" pathLength="1" d="M56.5 31v42"/>
+      </g>
+    </mask>
+  </defs>
+  <style>
+    .trace { display: none }
+    @media (prefers-reduced-motion: no-preference) {
+      /* Only the header requests the signature fragment. */
+      #signature:target .trace { display: inline }
+      #signature:target .solid { animation: develop 1.05s both }
+      svg:has(#signature:target) .ribbon { animation: draw .8s cubic-bezier(.3,0,.3,1) both }
+      svg:has(#signature:target) .stem { animation: draw .28s .72s ease-out both }
+    }
+    @keyframes draw {
+      from { stroke-dasharray: 1 2; stroke-dashoffset: 1.1 }
+      to { stroke-dasharray: 1 2; stroke-dashoffset: 0 }
+    }
+    @keyframes develop {
+      0%, 92% { opacity: .12 }
+      100% { opacity: 1 }
+    }
+  </style>
+  <g id="signature" transform="translate(13 -2) skewX(-13)" fill="#F3633D">
+    <use class="solid" href="#sp"/>
+    <use class="trace" href="#sp" mask="url(#ink)"/>
+  </g>
+</svg>
