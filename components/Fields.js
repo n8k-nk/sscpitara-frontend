@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 export const messages = (errors, name) => errors?.[name] ?? [];
 
 export function Errors({ list, className = "errorlist" }) {
@@ -7,13 +9,25 @@ export function Errors({ list, className = "errorlist" }) {
 }
 
 /** One labelled input with help text and server-side errors. */
-export function Field({ name, label, type = "text", value, onChange, errors, help, optional, wide, ...rest }) {
+export function Field({ name, label, type = "text", value, onChange, errors, help, optional, wide, revealPassword, ...rest }) {
   const list = messages(errors, name);
+  const [visible, setVisible] = useState(false);
+  const id = `id_${name}`;
+  const action = visible ? "Hide" : "Show";
+  const input = <input id={id} name={name} type={visible ? "text" : type} value={value ?? ""}
+    onChange={(e) => onChange(e.target.value)} aria-invalid={list.length ? true : undefined} {...rest} />;
+
   return <div className={`profile-field${list.length ? " has-error" : ""}${wide ? " wide" : ""}`}>
-    <label htmlFor={`id_${name}`}>{label}{optional && <span className="optional"> (optional)</span>}</label>
+    <label htmlFor={id}>{label}{optional && <span className="optional"> (optional)</span>}</label>
     {type === "textarea"
-      ? <textarea id={`id_${name}`} name={name} value={value ?? ""} onChange={(e) => onChange(e.target.value)} {...rest} />
-      : <input id={`id_${name}`} name={name} type={type} value={value ?? ""} onChange={(e) => onChange(e.target.value)} aria-invalid={list.length ? true : undefined} {...rest} />}
+      ? <textarea id={id} name={name} value={value ?? ""} onChange={(e) => onChange(e.target.value)} {...rest} />
+      : revealPassword
+        ? <div className="password-field">
+          {input}
+          <button type="button" aria-controls={id} aria-label={`${action} ${label.toLowerCase()}`}
+            onClick={() => setVisible(!visible)}>{action}</button>
+        </div>
+        : input}
     {help && <small id={`id_${name}_helptext`}>{help}</small>}
     <Errors list={list} />
   </div>;

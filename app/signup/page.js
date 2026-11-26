@@ -2,14 +2,14 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { session } from "../../lib/server";
 import Auth from "../../components/Auth";
-import AuthShell from "../../components/AuthShell";
+import AccountAccess from "../../components/AccountAccess";
 
 export const metadata = { title: "Create an account", robots: { index: false } };
 
 export default async function SignUp() {
   if ((await session()).authenticated) redirect("/onboarding/");
-  return <AuthShell title="Create an account" sub="Create a free account to save your exam matches and practice." aside="Find the SSC exams that fit you."
+  return <AccountAccess title="Create an account" intro="Save your exam matches, practice results and study progress."
     switchTo={<>Already have an account? <Link href="/signin/">Sign in</Link></>}>
     <Auth mode="signup" />
-  </AuthShell>;
+  </AccountAccess>;
 }

@@ -41,9 +41,9 @@ function Days({ papers }) {
   return <ul className="pyq-days">{days.map(([key, list]) => <li key={key}>
     <div className="pyq-day"><strong>{list[0].held_on ? when(list[0].held_on, { day: "numeric", month: "short" }) : list[0].stage}</strong>
       <span className="muted">{list[0].held_on ? when(list[0].held_on, { weekday: "long" }) : ""}</span></div>
-    <div className="pyq-shifts">{list.map((p) => <Link key={p.slug} href={`/pyq/${p.path}/`} className="pyq-shift">
-      <span>{p.shift ? `Shift ${p.shift}` : p.name || "Paper"}</span>
-      <small>{p.done > 0 ? `${p.done}/${p.questions} done` : `${p.questions} Q`}</small>
+    <div className="pyq-shifts">{list.map((p) => <Link key={p.slug} href={`/pyq/${p.path}/`} className={`pyq-shift${p.locked ? " locked" : ""}`}>
+      <span>{p.shift ? `Shift ${p.shift}` : p.name || "Paper"}{p.locked && " 🔒"}</span>
+      <small>{p.locked ? "Premium" : p.done > 0 ? `${p.done}/${p.questions} done` : `${p.questions} Q`}</small>
     </Link>)}</div>
   </li>)}</ul>;
 }
@@ -168,8 +168,14 @@ export function QuestionFeed({ data, pageHref, skillPractice = false }) {
   const anon = data.viewer === "anonymous";
   const hidden = anon ? Math.max(0, data.total - data.free_preview) : 0;
   return <>
-    {anon && hidden > 0 && <Unlock free={data.free_preview} hidden={hidden} />}
-    {data.viewer === "member" && <p className="notice">Worked explanations are part of Premium. <Link href="/plans/">See Premium</Link></p>}
+    {data.paper_locked && (
+      <div className="notice pyq-wall" role="region" aria-label="Premium paper">
+        <span>This paper is part of <strong>Premium</strong>. Six papers per year are free; upgrade to unlock all shifts and worked solutions.</span>
+        <div className="actions"><Link className="button" href="/plans/">Get Premium</Link></div>
+      </div>
+    )}
+    {!data.paper_locked && anon && hidden > 0 && <Unlock free={data.free_preview} hidden={hidden} />}
+    {!data.paper_locked && data.viewer === "member" && <p className="notice">Worked explanations are part of Premium. <Link href="/plans/">See Premium</Link></p>}
     {data.questions.length ? <>
       <p className="muted">{data.total} question{data.total === 1 ? "" : "s"} · page {data.page} of {data.pages}</p>
       <div className="pyq-list">{data.questions.map((q) => <Item key={q.id} q={q} viewer={data.viewer} skillPractice={skillPractice} />)}</div>

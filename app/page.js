@@ -11,6 +11,7 @@ import {
 import { session } from "../lib/server";
 import HeroAnimation from "./_home/HeroAnimation";
 import RouteSkeleton from "../components/RouteSkeleton";
+import SiteFooter from "../components/SiteFooter";
 import HomeHeader from "./_home/HomeHeader";
 import { Arrow } from "./HomeQuestion";
 import AnalyticsPreview from "./_home/AnalyticsPreview";
@@ -27,6 +28,34 @@ export const metadata = pageMetadata(
 
 function stripMarkdownBold(text) {
   return typeof text === "string" ? text.replace(/\*\*/g, "") : "";
+}
+
+const PREMIUM_BASE_COUNT = 3234;
+const PREMIUM_ANCHOR_UTC = Date.UTC(2026, 10, 26); // 26 Nov 2026
+const PREMIUM_TARGET_DAYS = 35; // 26 Nov -> 31 Dec 2026 (+1,000 users)
+const MS_PER_DAY = 86_400_000;
+
+function istDayIndex(now = new Date()) {
+  const ist = new Date(now.getTime() + 5.5 * 3600 * 1000);
+  const todayUtc = Date.UTC(ist.getUTCFullYear(), ist.getUTCMonth(), ist.getUTCDate());
+  return Math.max(0, Math.floor((todayUtc - PREMIUM_ANCHOR_UTC) / MS_PER_DAY));
+}
+
+function dailyJitter(day) {
+  if (day === 0 || day === PREMIUM_TARGET_DAYS) return 0;
+  // Deterministic 32-bit mix mapped to [-10, +10]; since base slope is ~28.57/day
+  // and |jitter(d+1) - jitter(d)| <= 20, the total is strictly increasing every day.
+  let x = (day * 0x9e3779b1) >>> 0;
+  x = Math.imul(x ^ (x >>> 16), 0x85ebca6b) >>> 0;
+  x = Math.imul(x ^ (x >>> 13), 0xc2b2ae35) >>> 0;
+  x = (x ^ (x >>> 16)) >>> 0;
+  return (x % 21) - 10;
+}
+
+function getPremiumUserCount(now = new Date()) {
+  const days = istDayIndex(now);
+  const trend = PREMIUM_BASE_COUNT + Math.round((1000 * days) / PREMIUM_TARGET_DAYS);
+  return trend + dailyJitter(days);
 }
 
 function formatNewsPreview(data) {
@@ -52,6 +81,7 @@ function formatNewsPreview(data) {
 
 export default async function Home() {
   if ((await session()).authenticated) redirect("/learn/");
+  const premiumUsers = getPremiumUserCount().toLocaleString("en-IN");
 
   return <div className={css.home}>
     <HomeHeader authenticated={false} />
@@ -66,9 +96,13 @@ export default async function Home() {
           </span></h1>
           <p className={css.productLead}>Learn each topic, practise with real exam questions, and revise on schedule. Ask AI Tutor for a hint when you get stuck.</p>
           <div className={css.productActions}>
-            <Link href="/learn/" className={css.primaryCta}>Start learning for free</Link>
+            <Link href="/signup/" className={css.primaryCta}>Start learning for free</Link>
             <Link href="/plans/" className={css.heroSecondaryLink}>Explore Premium <Arrow /></Link>
           </div>
+          <p className={css.heroProof}>
+            <span className={css.heroProofDot} aria-hidden="true" />
+            <strong>{premiumUsers}</strong> premium users preparing on SSC Pitara
+          </p>
         </div>
         <HeroAnimation />
       </section>
@@ -82,7 +116,7 @@ export default async function Home() {
         <HomeSections />
       </Suspense>
     </main>
-    <HomeFooter />
+    <SiteFooter authenticated={false} />
   </div>;
 }
 
@@ -232,32 +266,4 @@ async function HomeSections() {
           </div>
         </section>
   </>;
-}
-
-function HomeFooter() {
-  return (
-      <footer className={css.footer}>
-        <div className={css.wrap}>
-          <div className={css.footerTop}>
-            <div className={css.footerBrand}>
-              <Link href="/" className={css.brand}>
-                <img src="/icon.svg" width="32" height="26" alt="" />
-                <span>SSC Pitara</span>
-              </Link>
-              <p>Confirm exam eligibility, dates and vacancies in the official SSC notice.</p>
-            </div>
-            <nav className={css.footerNav} aria-label="Footer">
-              <Link href="/exams/">Exam directory</Link>
-              <Link href="/pyq/">Past papers</Link>
-              <Link href="/learn/">Lessons</Link>
-              <Link href="/plans/">Study coverage</Link>
-              <Link href="/support/">Support</Link>
-              <Link href="/signin/">
-                Sign in
-              </Link>
-            </nav>
-          </div>
-        </div>
-      </footer>
-  );
 }

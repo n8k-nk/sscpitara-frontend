@@ -1,0 +1,33 @@
+.shell {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main {
+  width: var(--page);
+  margin-inline: auto;
+  padding: clamp(2rem, 5vw, 3.5rem) 0 clamp(3rem, 6vw, 4.5rem);
+  flex: 1;
+}
+
+.article {
+  max-width: 72ch;
+  overflow-wrap: anywhere;
+}
+
+.article h1 {
+  font-size: clamp(2rem, 5vw, 3.25rem);
+  letter-spacing: -.04em;
+  line-height: 1.08;
+  margin: 0 0 1rem;
+}
+
+.article h2 {
+  font-size: 1.25rem;
+  margin: 1.8rem 0 .5rem;
+}
+
+.article p, .article ul {
+  margin-block: 0 .85rem;
+}

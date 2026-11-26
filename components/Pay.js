@@ -14,14 +14,14 @@ function loadRazorpay() {
 }
 
 /** Create an order on Django, open Razorpay checkout, then ask Django to verify the signed result. */
-export default function Pay({ price }) {
+export default function Pay({ price, kind = "premium", label }) {
   const router = useRouter();
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
 
   async function pay() {
     setBusy(true); setStatus("");
-    const { ok, data } = await send("billing/checkout");
+    const { ok, data } = await send("billing/checkout", { kind });
     if (!ok) { setStatus(data.error ?? "Checkout is unavailable right now."); setBusy(false); return; }
     if (data.already) { router.refresh(); return; }
     try { await loadRazorpay(); } catch (error) { setStatus(error.message); setBusy(false); return; }
@@ -38,6 +38,6 @@ export default function Pay({ price }) {
     });
     checkout.open();
   }
-  return <><button type="button" id="pay" className="block" onClick={pay} disabled={busy}>{busy ? "Opening checkout…" : `Buy Base · ${price}`}</button>
+  return <><button type="button" id={`pay-${kind}`} className="block" onClick={pay} disabled={busy}>{busy ? "Opening checkout…" : (label || `Get Premium · ${price}`)}</button>
     <p role="status" id="payment-status" className="muted" style={{ marginTop: ".75rem" }}>{status}</p></>;
 }

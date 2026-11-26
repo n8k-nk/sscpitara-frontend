@@ -1,0 +1,154 @@
+.billing {
+  max-width: 59rem;
+  margin-inline: auto;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.card {
+  padding: clamp(1.1rem, 3vw, 1.5rem);
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: var(--alt);
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+}
+
+.cardHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+}
+
+.cardHead h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.creditsNum {
+  display: flex;
+  align-items: baseline;
+  gap: .5rem;
+  margin: .25rem 0;
+}
+
+.creditsNum strong {
+  font-size: 2.4rem;
+  line-height: 1;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.creditsNum span {
+  color: var(--muted);
+  font-size: .95rem;
+}
+
+.facts {
+  margin: 0;
+}
+
+.facts div {
+  display: grid;
+  grid-template-columns: minmax(7rem, 1fr) minmax(0, 1.4fr);
+  gap: .6rem;
+  padding: .45rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.facts dt {
+  color: var(--muted);
+}
+
+.facts dd {
+  margin: 0;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.note {
+  margin: 0;
+  color: var(--muted);
+  font-size: .9rem;
+  line-height: 1.5;
+}
+
+.usageRules {
+  list-style: none;
+  margin: .15rem 0 0;
+  padding: 0;
+  border-top: 1px solid var(--line);
+}
+
+.usageRules li {
+  display: flex;
+  justify-content: space-between;
+  gap: .5rem 1rem;
+  padding: .4rem 0;
+  border-bottom: 1px solid var(--line);
+  font-size: .875rem;
+}
+
+.usageRules span {
+  color: var(--muted);
+}
+
+.usageRules strong {
+  color: var(--ink);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.cardFoot {
+  margin-top: auto;
+  padding-top: .25rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  align-items: center;
+}
+
+.history {
+  padding: clamp(1.1rem, 3vw, 1.5rem);
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: var(--alt);
+}
+
+.history h2 {
+  margin: 0 0 .75rem;
+  font-size: 1.1rem;
+}
+
+.historyList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.historyList li {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: .4rem 1rem;
+  padding: .55rem 0;
+  border-bottom: 1px solid var(--line);
+  font-size: .9rem;
+}
+
+.historyList li:last-child {
+  border-bottom: 0;
+}
+
+@media (max-width: 44rem) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

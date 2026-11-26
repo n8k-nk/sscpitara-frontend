@@ -37,7 +37,7 @@ export default function AIReview({ exam, stage }) {
       </button>}
     </header>
     {!review && <small id="ai-review-data" className={styles.aiNotice}>
-      Requesting a review shares your study summary (lessons, topic results and mock marks, not your name) with Coarena, which stores requests and responses.
+      Requesting a review shares your study summary (lessons, topic results and mock marks, not your name) with our AI service provider to generate feedback.
     </small>}
     {pending && <p className={styles.aiNotice} role="status">This takes a few seconds…</p>}
     {error && <p className="errorlist" role="alert">{error}</p>}

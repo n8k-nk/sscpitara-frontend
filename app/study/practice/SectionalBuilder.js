@@ -1,8 +1,8 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
 import { send } from "../../../lib/client";
 import styles from "./mocks.module.css";
 
@@ -31,8 +31,26 @@ export default function SectionalBuilder({ data }) {
   const [minutes, setMinutes] = useState("15");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [subjectOpen, setSubjectOpen] = useState(false);
   const request = useRef(null);
+  const subjectWrapRef = useRef(null);
   const subject = data.subjects.find(({ id }) => id === subjectId);
+
+  useEffect(() => {
+    if (!subjectOpen) return undefined;
+    const onDown = (e) => {
+      if (subjectWrapRef.current && !subjectWrapRef.current.contains(e.target)) setSubjectOpen(false);
+    };
+    const onKey = (e) => {
+      if (e.key === "Escape") setSubjectOpen(false);
+    };
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [subjectOpen]);
   const chapters = subject?.chapters.filter(({ id }) => chapterIds.includes(id)) ?? [];
   const topics = chapters.flatMap((chapter) => chapter.topics.map((topic) => ({
     ...topic, label: chapters.length > 1 ? `${chapter.name} · ${topic.name}` : topic.name,
@@ -68,15 +86,58 @@ export default function SectionalBuilder({ data }) {
   return <div className={styles.columns}>
     <section className={styles.list} aria-labelledby="sectional-title">
       <h2 id="sectional-title">Build a sectional test</h2>
+      {!data.premium && (
+        <div className="notice" role="note" style={{ marginBottom: "1rem" }}>
+          <strong>Sectional tests are a Premium feature.</strong>{" "}
+          Upgrade to build custom timed tests by subject, chapter, and topic.{" "}
+          <Link href="/plans/">Get Premium</Link>
+        </div>
+      )}
       {!subject ? <p className="muted">No eligible questions are available for this tier yet.</p> :
         <form className={styles.builder} onSubmit={start}>
-          <div><label htmlFor="sectional-subject">Subject</label><select id="sectional-subject" value={subjectId} disabled={busy} onChange={(e) => {
-            setSubject(e.target.value);
-            setChapters([]);
-            setTopics([]);
-            setError("");
-          }}>{data.subjects.map((item) => <option key={item.id} value={item.id}>
-            {item.paper && `${item.paper} · `}{item.name}</option>)}</select></div>
+          <div className={styles.subjectField} ref={subjectWrapRef}>
+            <label id="sectional-subject-label">Subject</label>
+            <button
+              type="button"
+              id="sectional-subject"
+              className={styles.subjectTrigger}
+              aria-haspopup="listbox"
+              aria-expanded={subjectOpen}
+              aria-labelledby="sectional-subject-label sectional-subject"
+              disabled={busy}
+              onClick={() => setSubjectOpen((open) => !open)}
+            >
+              <span>{subject.paper && `${subject.paper} · `}{subject.name}</span>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M4 6l4 4 4-4" />
+              </svg>
+            </button>
+            {subjectOpen && (
+              <ul className={styles.subjectMenu} role="listbox" aria-labelledby="sectional-subject-label">
+                {data.subjects.map((item) => {
+                  const selected = item.id === subjectId;
+                  return (
+                    <li key={item.id} role="option" aria-selected={selected}>
+                      <button
+                        type="button"
+                        className={selected ? styles.subjectOptionActive : styles.subjectOption}
+                        onClick={() => {
+                          setSubject(item.id);
+                          setChapters([]);
+                          setTopics([]);
+                          setError("");
+                          setSubjectOpen(false);
+                        }}
+                      >
+                        <span>{item.paper && `${item.paper} · `}{item.name}</span>
+                        <small>{item.count}</small>
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
           <Choices key={subjectId} label="Chapters" hint="Leave unchecked to use every chapter in this subject." items={subject.chapters} picked={chapterIds} onChange={changeChapter} disabled={busy} />
           {topics.length > 0 && <Choices label="Topics" hint="Leave unchecked to use all questions in the selected chapters." items={topics}
             picked={topicIds} onChange={(id) => setTopics(toggle(topicIds, id))} disabled={busy} />}
@@ -90,7 +151,9 @@ export default function SectionalBuilder({ data }) {
               onChange={(e) => setMinutes(e.target.value)} /></label>
           </div>
           <p className={styles.state} role="status">{available.toLocaleString("en-IN")} questions in this selection. Choose up to {limit}.</p>
-          <div><button type="submit" disabled={!limit || busy}>{busy ? "Building test…" : "Start sectional test"}</button></div>
+          <div>{data.premium
+            ? <button type="submit" disabled={!limit || busy}>{busy ? "Building test…" : "Start sectional test"}</button>
+            : <Link className="button" href="/plans/">Get Premium to start</Link>}</div>
           {error && <p role="alert" className="errorlist">{error}</p>}
         </form>}
     </section>

@@ -25,7 +25,7 @@ npm ci
 npm run dev
 ```
 
-Open http://127.0.0.1:3000/. For a production build configure DJANGO_ORIGIN as the internal backend origin and SITE_URL as the canonical public HTTPS origin before running npm run build and npm start. Set Django PUBLIC_FRONTEND_URL and DJANGO_CSRF_TRUSTED_ORIGINS to the matching public origin. Set the Django allowed hosts for the deployed backend and forward protected routes through the same public origin. Local frontend pages send noindex. The production sitemap lists published exam pages and the public learning and study coverage pages.
+Open http://127.0.0.1:3000/. For a production build configure DJANGO_ORIGIN as the internal backend origin and SITE_URL as the canonical public HTTPS origin before running npm run build and npm start. Set Django PUBLIC_FRONTEND_URL and DJANGO_CSRF_TRUSTED_ORIGINS to the matching public origin. Set the Django allowed hosts for the deployed backend and forward protected routes through the same public origin. Local frontend pages send noindex. The production sitemap lists published exam pages, public study resources and the site information pages. Set `PUBLIC_SUPPORT_EMAIL` to a monitored public inbox to give signed-out visitors a direct contact option on `/contact/`.
 
 The Next.js pages replace the Django directory template. The learner area, forms, pass management and admin use the existing Django views until those workflows have React equivalents.
 

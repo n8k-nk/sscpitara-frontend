@@ -39,6 +39,8 @@ export default async function Layout({ children }) {
       exam={<Suspense fallback={null}><HeaderExam /></Suspense>}
       controls={<ThemeToggle />}
       authenticated={Boolean(user.authenticated)}
+      credits={user.authenticated ? (user.credits ?? 0) : null}
+      premium={Boolean(user.premium)}
       footer={<SiteFooter authenticated={user.authenticated} />}
     >{children}</AppShell>
   </body></html>;

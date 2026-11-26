@@ -25,6 +25,33 @@
 .filters > div { min-width: 8rem; }
 .builder { display: grid; gap: .75rem; }
 .builder > p { margin: 0; }
+.subjectField { position: relative; }
+.subjectField label { display: block; }
+.subjectTrigger {
+  display: flex; align-items: center; justify-content: space-between; gap: .5rem;
+  width: 100%; min-height: 2.6rem; margin-top: .35rem; padding: .5rem .75rem;
+  border: 1px solid var(--line-strong); border-radius: var(--radius-sm);
+  background: var(--bg); color: var(--ink); font: 400 1rem/1.4 var(--sans);
+  text-align: left; cursor: pointer;
+}
+.subjectTrigger:hover { border-color: var(--faint); }
+.subjectTrigger[aria-expanded="true"] { border-color: var(--accent); background: var(--sunken); }
+.subjectMenu {
+  position: absolute; z-index: 20; top: calc(100% + .25rem); left: 0; right: 0;
+  list-style: none; margin: 0; padding: .25rem;
+  border: 1px solid var(--line-strong); border-radius: var(--radius-sm);
+  background: var(--bg); box-shadow: 0 10px 28px rgba(0, 0, 0, .28);
+  max-height: 16rem; overflow-y: auto;
+}
+.subjectOption, .subjectOptionActive {
+  display: flex; align-items: center; justify-content: space-between; gap: .5rem;
+  width: 100%; padding: .5rem .65rem; border: 0; border-radius: 4px;
+  background: transparent; color: var(--ink); font: 500 .95rem/1.35 var(--sans);
+  text-align: left; cursor: pointer;
+}
+.subjectOption:hover { background: var(--alt); }
+.subjectOptionActive { background: var(--accent-soft); color: var(--accent); font-weight: 650; }
+.subjectOption small, .subjectOptionActive small { color: var(--muted); font-size: .8rem; }
 .duration { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem; }
 .choices { border: 1px solid var(--line-strong); border-radius: var(--radius-sm); }
 .choices summary { padding: .55rem .7rem; cursor: pointer; font-weight: 650; }

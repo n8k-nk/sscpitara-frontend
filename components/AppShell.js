@@ -44,6 +44,7 @@ function Mark({ name }) {
     {name === "analytics" && <g {...common}><path d="M4 4v16h16M8 15l4-5 3 2 5-6" /></g>}
     {name === "tutor" && <g {...common}><path d="M12 2a9 9 0 0 1 9 9c0 4-2.6 7.4-6.3 8.6L12 22l-2.7-2.4C5.6 18.4 3 15 3 11a9 9 0 0 1 9-9Z" /><path d="M9 10h6m-3-3v6" /></g>}
     {name === "account" && <g {...common}><circle cx="12" cy="8" r="3.2" /><path d="M5 20v-1a7 7 0 0 1 14 0v1" /></g>}
+    {name === "billing" && <g {...common}><rect x="3" y="5" width="18" height="14" rx="2" /><path d="M3 10h18M7 15h4" /></g>}
     {name === "signin" && <path {...common} d="M14 4h6v16h-6M3 12h12m-4-4 4 4-4 4" />}
     {name === "signout" && <g {...common}><path d="M12 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h7" /><path d="M9 12h12m-4-4 4 4-4 4" /></g>}
   </svg>;
@@ -77,12 +78,16 @@ function Destination({ item, path, onClick }) {
   </Link>;
 }
 
-export default function AppShell({ exam, controls, authenticated, footer, children, collapsed: collapsedAtStart = false }) {
+export default function AppShell({ exam, controls, authenticated, credits = null, premium = false, footer, children, collapsed: collapsedAtStart = false }) {
   const path = usePathname();
   const [collapsed, setCollapsed] = useState(collapsedAtStart);
   const dialog = useRef(null);
+  const creditsDialog = useRef(null);
 
-  useEffect(() => { dialog.current?.close(); }, [path]);
+  useEffect(() => {
+    dialog.current?.close();
+    creditsDialog.current?.close();
+  }, [path]);
   useEffect(() => {
     const desktop = window.matchMedia("(min-width: 900px)");
     const closeOnDesktop = () => { if (desktop.matches) dialog.current?.close(); };
@@ -91,12 +96,17 @@ export default function AppShell({ exam, controls, authenticated, footer, childr
   }, []);
 
   const guestPlans = (path === "/plans" || path === "/plans/") && !authenticated;
-  if (path === "/" || guestPlans) return children;
+  const accountAccess = /^\/(signin|signup)\/?$/.test(path);
+  const companyPage = /^\/(about|contact|privacy|terms|refunds)\/?$/.test(path);
+  if (path === "/" || guestPlans || accountAccess || companyPage) return children;
 
+  const billing = authenticated
+    ? { href: "/billing/", label: "Billing", match: ["/billing"], icon: "billing" }
+    : null;
   const account = authenticated
     ? { href: "/account/", label: "Account", match: ["/account", "/onboarding"], icon: "account" }
     : { href: "/signin/", label: "Sign in", match: ["/signin"], icon: "signin" };
-  const moreCurrent = [...moreItems, account].some((item) => isCurrent(item, path));
+  const moreCurrent = [...moreItems, ...(billing ? [billing] : []), account].some((item) => isCurrent(item, path));
   const closeMore = () => dialog.current?.close();
   const signOut = authenticated && <SignOut title="Sign out">
     <span className="nav-mark"><Mark name="signout" /></span><span className="nav-label">Sign out</span>
@@ -112,7 +122,23 @@ export default function AppShell({ exam, controls, authenticated, footer, childr
         <Brand className="header-brand" />
       </div>
       {exam}
-      <div className="header-controls">{controls}</div>
+      <div className="header-controls">
+        {authenticated && credits !== null && (
+          <button
+            type="button"
+            className={`credits-pill${credits === 0 ? " empty" : ""}`}
+            aria-haspopup="dialog"
+            aria-controls="credits-info-dialog"
+            aria-label={`${credits} AI credits remaining. Tap to see what AI credits are for.`}
+            onClick={() => creditsDialog.current?.showModal()}
+          >
+            <span aria-hidden="true">✦</span>
+            <span>{credits}</span>
+            <span className="credits-label">AI credit{credits === 1 ? "" : "s"}</span>
+          </button>
+        )}
+        {controls}
+      </div>
     </div></header>
     <div className="shell-body">
       <aside id="site-menu" className="site-sidebar">
@@ -122,6 +148,7 @@ export default function AppShell({ exam, controls, authenticated, footer, childr
           </ul>)}
         </nav>
         <nav className="side-nav side-account" aria-label="Account">
+          {billing && <Destination item={billing} path={path} />}
           <Destination item={account} path={path} />
           {signOut}
         </nav>
@@ -148,10 +175,56 @@ export default function AppShell({ exam, controls, authenticated, footer, childr
           {moreItems.map((item) => <Destination key={item.href} item={item} path={path} onClick={closeMore} />)}
         </nav>
         <nav className="side-nav side-account" aria-label="Account">
+          {billing && <Destination item={billing} path={path} onClick={closeMore} />}
           <Destination item={account} path={path} onClick={closeMore} />
           {signOut}
         </nav>
       </div>
     </dialog>
+    {authenticated && credits !== null && (
+      <dialog
+        id="credits-info-dialog"
+        ref={creditsDialog}
+        className="credits-dialog"
+        aria-labelledby="credits-dialog-title"
+        onClick={(event) => { if (event.target === creditsDialog.current) creditsDialog.current?.close(); }}
+      >
+        <div className="credits-dialog-body">
+          <div className="credits-dialog-head">
+            <div>
+              <span className="eyebrow">{premium ? "Premium" : "Free plan"}</span>
+              <h2 id="credits-dialog-title">AI Credits: {credits} remaining</h2>
+            </div>
+            <button type="button" className="sheet-close" aria-label="Close" onClick={() => creditsDialog.current?.close()}>
+              <MenuIcon kind="close" />
+            </button>
+          </div>
+          <p className="muted">
+            AI credits power all AI features on SSC Pitara. Each request uses <strong>1 credit</strong>:
+          </p>
+          <ul className="credits-dialog-list">
+            <li><span>AI Tutor chat</span><strong>1 credit / message</strong></li>
+            <li><span>PYQ Ask AI &amp; mistake feedback</span><strong>1 credit / request</strong></li>
+            <li><span>Analytics AI review</span><strong>1 credit / review</strong></li>
+            <li><span>Lesson Ask AI</span><strong>1 credit / question</strong></li>
+          </ul>
+          {!premium && (
+            <p className="credits-dialog-upsell">
+              Free accounts start with <strong>5 credits</strong>. Upgrade to Premium (<strong>₹199 / 1 year</strong>) for <strong>+200 AI credits</strong>, or top up <strong>+150 AI credits for ₹100</strong> anytime.
+            </p>
+          )}
+          <div className="credits-dialog-actions">
+            {!premium && (
+              <Link className="button" href="/plans/" onClick={() => creditsDialog.current?.close()}>
+                Get 200 AI Credits · ₹199/yr
+              </Link>
+            )}
+            <Link className={premium ? "button" : "button secondary"} href="/billing/" onClick={() => creditsDialog.current?.close()}>
+              View Billing &amp; Usage
+            </Link>
+          </div>
+        </div>
+      </dialog>
+    )}
   </div>;
 }

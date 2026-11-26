@@ -33,7 +33,7 @@ export default function Auth({ mode, next }) {
   return <form method="post" onSubmit={submit}>
     <Errors list={errors.__all__} className="errorlist nonfield" />
     {config.fields.map(([name, label, type, autoComplete, help]) =>
-      <Field key={name} name={name} label={label} type={type} autoComplete={autoComplete} help={help} errors={errors} required
+      <Field key={name} name={name} label={label} type={type} autoComplete={autoComplete} help={help} errors={errors} revealPassword={type === "password"} required
         value={values[name]} onChange={(value) => setValues({ ...values, [name]: value })} />)}
     <button type="submit" disabled={busy}>{busy ? "Please wait…" : config.action}</button>
     {mode === "signin" && <div className="auth-links"><Link href="/account/reset/">Forgot password?</Link></div>}

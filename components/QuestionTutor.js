@@ -4,13 +4,17 @@ import { useId, useState } from "react";
 import { send } from "../lib/client";
 import Rich from "./Rich";
 
-export default function QuestionTutor({ mode, question, attempt, position }) {
+export default function QuestionTutor({ mode, question, attempt, position, anon = false, onRequireAuth }) {
   const [state, setState] = useState({});
   const [expanded, setExpanded] = useState(false);
   const feedbackId = useId();
   const label = mode === "hint" ? "Ask AI" : "Explain my mistake";
 
   async function ask() {
+    if (anon) {
+      onRequireAuth?.();
+      return;
+    }
     if (state.text) {
       setExpanded((visible) => !visible);
       return;

@@ -114,7 +114,7 @@ function Live({ q, viewer, stem, options, passage, solution, hindi, skillPractic
     {(!q.dropped || (q.tutor_available && !result?.correct)) && <div className="pyq-foot">
       {!q.dropped && <button type="button" className="secondary" aria-expanded={explain} onClick={() => setExplain((x) => !x)}>{explain ? "Hide explanation" : "View explanation"}</button>}
       {q.tutor_available && !result?.correct && <QuestionTutor key={result ? "mistake" : "hint"}
-        mode={result ? "mistake" : "hint"} question={q.id} />}
+        mode={result ? "mistake" : "hint"} question={q.id} anon={anon} onRequireAuth={openSignup} />}
       {!q.dropped && explain && (premium ? <div className="pyq-solution">{solution}</div> :
         <div className="pyq-upsell" role="note">
           <strong>Explanations are a Premium feature.</strong>

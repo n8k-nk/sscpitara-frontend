@@ -56,7 +56,7 @@ export default function MockList({ mocks, stage, initialPage, timing }) {
   if (!mocks.length) return <p className="muted">No tests are available for this tier yet.</p>;
   // The newest unfinished attempt wins; otherwise the first mock never started.
   const resume = mocks.filter((mock) => stateOf(mock) === "active").sort((a, b) => b.attempt.id - a.attempt.id)[0];
-  const next = resume ?? mocks.find((mock) => stateOf(mock) === "new");
+  const next = resume ?? mocks.find((mock) => stateOf(mock) === "new" && !mock.locked);
   const counts = Object.fromEntries(FILTERS.map(([key]) => [key, key === "all" ? mocks.length : mocks.filter((m) => stateOf(m) === key).length]));
   const matching = filter === "all" ? mocks : mocks.filter((mock) => stateOf(mock) === filter);
   const pages = Math.max(1, Math.ceil(matching.length / PAGE));
@@ -79,16 +79,20 @@ export default function MockList({ mocks, stage, initialPage, timing }) {
     {!matching.length && <p className="muted">No tests in this group yet.</p>}
     <ol className={styles.cards}>
       {matching.slice((page - 1) * PAGE, page * PAGE).map((mock) => {
-        const { id, number, attempt } = mock, name = label(number), state = stateOf(mock);
+        const { id, number, attempt, locked } = mock, name = label(number), state = stateOf(mock);
         return <li key={id} data-state={state}>
           <strong>{name}</strong>
-          <span className={styles.state}>{state === "done" ? `Score ${Number(attempt.score)}` : state === "active" ? "In progress" : "Not started"}</span>
+          <span className={styles.state}>{locked ? "Premium" : state === "done" ? `Score ${Number(attempt.score)}` : state === "active" ? "In progress" : "Not started"}</span>
           {error?.id === id && <p className="errorlist" role="alert">{error.message}</p>}
           <div className={styles.actions}>
             {attempt && <Link className="button secondary" prefetch={false} aria-label={`${attempt.complete ? "Results for" : "Resume"} ${name}`}
               href={`/study/attempt/${attempt.id}/${attempt.complete ? "results/" : ""}`}>{attempt.complete ? "Results" : "Resume"}</Link>}
-            {state !== "active" && <button type="button" className={state === "done" ? "ghost" : "secondary"} disabled={pending !== null}
-              aria-label={`${attempt ? "Retake" : "Start"} ${name}`} onClick={() => start(id)}>{id === pending ? "Starting…" : attempt ? "Retake" : "Start"}</button>}
+            {state !== "active" && (locked
+              ? <Link className="button ghost" prefetch={false} href="/plans/" aria-label={`${name} requires Premium`}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></svg>
+                Premium</Link>
+              : <button type="button" className={state === "done" ? "ghost" : "secondary"} disabled={pending !== null}
+                aria-label={`${attempt ? "Retake" : "Start"} ${name}`} onClick={() => start(id)}>{id === pending ? "Starting…" : attempt ? "Retake" : "Start"}</button>)}
           </div>
         </li>;
       })}
