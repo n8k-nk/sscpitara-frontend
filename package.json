@@ -1,6 +1,7 @@
 {
   "dependencies": {
-    "katex": "^0.19.1",
+    "dompurify": "^3.5.0",
+    "katex": "0.16.47",
     "next": "16.4.6",
     "react": "19.3.1",
     "react-dom": "19.3.1",

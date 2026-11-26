@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { send } from "../lib/client";
 import { Errors, Field, Select, Slider, Tiles, duration } from "./Fields";
@@ -35,16 +36,15 @@ const STEPS = [
   { short: "Your exams", title: "What you get if you clear", hint: "The post you can land, your starting salary, what the job lets you do, and what each stage unlocks." },
 ];
 // Which step each server-validated field lives on, so errors can send you back to it.
-const HOME = { education: 0, date_of_birth: 1, age_relaxation: 1, experience: 2, daily_minutes: 2, target_exams: 3, language: 3 };
+const HOME = { education: 0, age: 1, age_relaxation: 1, experience: 2, daily_minutes: 2, target_exams: 3, language: 3 };
+const EDIT_TITLES = ["Edit education", "Edit age and relaxation", "Edit study preferences", "Edit exams and language", "Edit profile details and results"];
 const stepOf = (name) => HOME[name] ?? 4;
 
 function check(step, v) {
   const e = {};
   if (step === 0 && !v.education) e.education = ["Choose your highest completed education."];
   if (step === 1) {
-    if (!v.date_of_birth) e.date_of_birth = ["Enter your date of birth."];
-    else if (v.date_of_birth > new Date().toISOString().slice(0, 10)) e.date_of_birth = ["Enter a date of birth in the past."];
-    else if (v.date_of_birth < "1900-01-01") e.date_of_birth = ["Enter a valid date of birth."];
+    if (!/^\d+$/.test(v.age) || Number(v.age) > 125) e.age = ["Enter your age in whole years."];
     if (!v.age_relaxation) e.age_relaxation = ["Choose the option that fits you best."];
   }
   if (step === 2) {
@@ -56,11 +56,12 @@ function check(step, v) {
 }
 
 /** Step-by-step profile questionnaire. Django still validates everything on save. */
-export default function Onboarding({ initial, options, exists }) {
+export default function Onboarding({ initial, options, exists, editStep = -1 }) {
   const router = useRouter();
   const [values, setValues] = useState(initial);
   const [errors, setErrors] = useState({});
-  const [step, setStep] = useState(0);
+  const editing = editStep >= 0;
+  const [step, setStep] = useState(editing ? editStep : 0);
   const [busy, setBusy] = useState(false);
   const heading = useRef(null);
   const [preview, setPreview] = useState({ rows: [], age: null });
@@ -68,11 +69,11 @@ export default function Onboarding({ initial, options, exists }) {
     if (!values.education) { setPreview({ rows: [], age: null }); return; }
     let active = true;
     const timer = setTimeout(async () => {
-      const { ok, data } = await send("profile/preview", { education: values.education, date_of_birth: values.date_of_birth, age_relaxation: values.age_relaxation });
+      const { ok, data } = await send("profile/preview", { education: values.education, age: values.age, age_relaxation: values.age_relaxation });
       if (active && ok) setPreview(data);
     }, 250);
     return () => { active = false; clearTimeout(timer); };
-  }, [values.education, values.date_of_birth, values.age_relaxation]);
+  }, [values.education, values.age, values.age_relaxation]);
   const rows = preview.rows;
   const fit = rows.filter((r) => FIT.includes(r.status));
   const likely = rows.filter((r) => r.status === "match");
@@ -84,7 +85,7 @@ export default function Onboarding({ initial, options, exists }) {
   const shown = chosen.length ? chosen : fit.slice(0, 3).map((r) => options.exams.find((e) => e.id === r.id)).filter(Boolean);
   const set = (name) => (value) => { setValues((current) => ({ ...current, [name]: value })); setErrors((e) => ({ ...e, [name]: undefined })); };
   const common = (name) => ({ name, value: values[name], onChange: set(name), errors });
-  const last = step === STEPS.length - 1;
+  const last = editing || step === STEPS.length - 1;
   const label = (list, value) => list.find((o) => o.value === String(value))?.label;
 
   useEffect(() => { heading.current?.focus({ preventScroll: true }); window.scrollTo({ top: 0, behavior: "smooth" }); }, [step]);
@@ -96,7 +97,8 @@ export default function Onboarding({ initial, options, exists }) {
   }
 
   async function submit() {
-    for (let s = 0; s < STEPS.length - 1; s += 1) {
+    const checkedSteps = editing ? [step] : [0, 1, 2, 3];
+    for (const s of checkedSteps) {
       const found = check(s, values);
       if (Object.keys(found).length) { setErrors(found); setStep(s); return; }
     }
@@ -110,22 +112,22 @@ export default function Onboarding({ initial, options, exists }) {
   }
 
   const tick = <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>;
-  return <div className="wz">
-    <nav className="wz-side" aria-label="Progress">
+  return <div className={editing ? "wz wz-edit" : "wz"}>
+    {!editing && <nav className="wz-side" aria-label="Progress">
       <p className="wz-title">{exists ? "Edit your profile" : "Set up your profile"}</p>
       <ol>{STEPS.map((item, i) => <li key={item.short} className={i === step ? "current" : i < step ? "done" : ""} aria-current={i === step ? "step" : undefined}>
         {i < step
           ? <button type="button" onClick={() => { setErrors({}); setStep(i); }}><span className="n">{tick}</span>{item.short}</button>
           : <><span className="n">{i + 1}</span>{item.short}</>}
       </li>)}</ol>
-    </nav>
+    </nav>}
     <div className="wz-main">
-      <div className="wz-mobile"><p>Step {step + 1} of {STEPS.length} · {STEPS[step].short}</p>
-        <div className="wz-seg" role="progressbar" aria-valuemin={1} aria-valuemax={STEPS.length} aria-valuenow={step + 1} aria-label="Progress">{STEPS.map((item, i) => <i key={item.short} className={i <= step ? "on" : ""} />)}</div></div>
+      {!editing && <div className="wz-mobile"><p>Step {step + 1} of {STEPS.length} · {STEPS[step].short}</p>
+        <div className="wz-seg" role="progressbar" aria-valuemin={1} aria-valuemax={STEPS.length} aria-valuenow={step + 1} aria-label="Progress">{STEPS.map((item, i) => <i key={item.short} className={i <= step ? "on" : ""} />)}</div></div>}
       <form method="post" noValidate onSubmit={(e) => { e.preventDefault(); last ? submit() : next(); }}>
         <div className="wz-step" key={step}>
-          <h1 ref={heading} tabIndex={-1}>{STEPS[step].title}</h1>
-          <p className="lead">{STEPS[step].hint}</p>
+          <h1 ref={heading} tabIndex={-1}>{editing ? EDIT_TITLES[step] : STEPS[step].title}</h1>
+          {(!editing || step < 3) && <p className="lead">{STEPS[step].hint}</p>}
           <Errors list={errors.__all__} className="errorlist nonfield" />
 
           {step === 0 && <>
@@ -137,13 +139,12 @@ export default function Onboarding({ initial, options, exists }) {
           </>}
 
           {step === 1 && <>
-            <Field {...common("date_of_birth")} label="Date of birth" type="date" max={new Date().toISOString().slice(0, 10)} autoComplete="bday" />
+            <Field {...common("age")} label="Age in years" type="number" inputMode="numeric" min={0} max={125} step={1} required />
             <Tiles {...common("age_relaxation")} label="Age relaxation that applies to you" list options={options.age_relaxation.map((o) => ({ ...o, hint: RELAXATION[o.value] }))} />
-            {preview.age != null && <Insight title={fit.length ? `You’re ${preview.age}. You likely fit ${likely.length} exam${likely.length === 1 ? "" : "s"}` : `You’re ${preview.age}. No exam fits yet`}>
+            {preview.age != null && <Insight title={fit.length ? `You’re ${preview.age}. ${fit.length} exam${fit.length === 1 ? "" : "s"} to consider` : `You’re ${preview.age}. No exam fits yet`}>
               {fit.length > 0 ? <>
                 <p>{likely.length > 0 && <>Likely: <b>{names(likely)}</b>. </>}{check_.length > 0 && <>Check conditions for: <b>{names(check_)}</b>.</>}</p>
-                {likely[0]?.limit && <p>{likely[0].code} age limits go up to {likely[0].limit} for some posts, so you may have up to {Math.max(0, likely[0].limit - preview.age)} more years to apply.</p>}
-              </> : <p>Check your date of birth and the relaxation option. The age limit is the usual reason.</p>}
+              </> : <p>Check your age and the relaxation option. The age limit is the usual reason.</p>}
             </Insight>}
           </>}
 
@@ -152,7 +153,7 @@ export default function Onboarding({ initial, options, exists }) {
             <Slider {...common("daily_minutes")} label="Time you can study each day" max={FOUR_HOUR_MINUTES}
               stops={[15, 60, 120, 180, FOUR_HOUR_MINUTES]} formatValue={studyDuration} />
             <Insight title={`${studyDuration(values.daily_minutes)} a day is ${Number(values.daily_minutes) === FOUR_HOUR_MINUTES ? "at least" : "about"} ${hours(Number(values.daily_minutes) || 0)} a week`}>
-              <p>Your plan starts with a free 20-question diagnostic across all four subjects. Then each day you get practice sized to your time, plus revision of questions you missed.</p>
+              <p>Each day you get practice sized to your time, based on what you have learned and answered, plus revision of questions you missed.</p>
               {values.experience !== "starting" && <p>You can add your earlier results on the last step, and we’ll pick up from the stage you reached.</p>}
             </Insight>
           </>}
@@ -170,11 +171,11 @@ export default function Onboarding({ initial, options, exists }) {
           </>}
 
           {step === 4 && <>
-            {values.target_exams.length === 0 && <p className="brief-intro">You didn’t pick any exams, so here are the best fits for your profile.</p>}
+            {!editing && <>{values.target_exams.length === 0 && <p className="brief-intro">You didn’t pick any exams, so here are the best fits for your profile.</p>}
             <div className="briefs">{shown.map((exam) => <ExamBrief key={exam.id} exam={exam} status={status[String(exam.id)]} />)}</div>
-            {shown.length === 0 && <p className="empty">No exam fits your answers yet. You can still save your profile and adjust it later.</p>}
-            <details className="panel" open={Object.keys(errors).some((n) => stepOf(n) === 4) || undefined}>
-              <summary>Add more detail (optional)</summary>
+            {shown.length === 0 && <p className="empty">No exam fits your answers yet. You can still save your profile and adjust it later.</p>}</>}
+            <details className="panel" open={editing || Object.keys(errors).some((n) => stepOf(n) === 4) || undefined}>
+              <summary>{editing ? "Profile details and previous results" : "Add more detail (optional)"}</summary>
               <div className="panel-body">
                 <Field {...common("display_name")} label="Display name" />
                 <Field {...common("qualification_notes")} label="Relevant qualifications or skills" optional maxLength={200}
@@ -192,10 +193,11 @@ export default function Onboarding({ initial, options, exists }) {
         </div>
 
         <div className="wz-actions">
-          {step > 0 ? <button type="button" className="secondary" onClick={() => { setErrors({}); setStep(step - 1); }}>Back</button> : <span />}
+          {editing ? <Link href="/account/">Cancel</Link> : step > 0 ? <button type="button" className="secondary" onClick={() => { setErrors({}); setStep(step - 1); }}>Back</button> : <span />}
           <div className="wz-right">
-            {step === 3 && <button type="button" className="ghost" onClick={() => { set("target_exams")([]); setStep(4); }}>Skip</button>}
-            <button type="submit" className="lg" disabled={busy}>{last ? (busy ? "Saving…" : "Continue to dashboard") : "Continue"}</button>
+            {step === 3 && editing && values.target_exams.length > 0 && <button type="button" className="ghost" onClick={() => set("target_exams")([])}>Clear target exam</button>}
+            {step === 3 && !editing && <button type="button" className="ghost" onClick={() => { set("target_exams")([]); setStep(4); }}>Skip</button>}
+            <button type="submit" className="lg" disabled={busy}>{last ? (busy ? "Saving…" : editing ? "Save changes" : "Continue to dashboard") : "Continue"}</button>
           </div>
         </div>
       </form>

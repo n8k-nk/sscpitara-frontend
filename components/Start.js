@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { send } from "../lib/client";
 
 /** Start a practice set. Optional `select` renders a labelled dropdown whose value is sent as `topic` or `subject`. */
-export default function Start({ kind, label, secondary, topic = "", subject = "", limit = 10, token, select, mock }) {
+export default function Start({ kind, label, secondary, topic = "", subject = "", limit = 10, token, select, mock, followup }) {
   const router = useRouter();
   const [picked, setPicked] = useState(select?.options[0] ?? "");
   const [extended, setExtended] = useState(false);
@@ -13,7 +13,7 @@ export default function Start({ kind, label, secondary, topic = "", subject = ""
   async function go(event) {
     event.preventDefault();
     setBusy(true); setError("");
-    const { ok, data } = await send("study/start", { kind, key: token, topic, subject, limit, extended, ...(select ? { [select.field]: picked } : {}) });
+    const { ok, data } = await send(followup ? `study/attempts/${followup.mock}/followup` : "study/start", followup ? { topic_id: followup.topic_id } : { kind, key: token, topic, subject, limit, extended, ...(select ? { [select.field]: picked } : {}) });
     if (ok) return router.push(`/study/attempt/${data.attempt}/`);
     setBusy(false);
     setError(data.error ?? "Could not start this set.");

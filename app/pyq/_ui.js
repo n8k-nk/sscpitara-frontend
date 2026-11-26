@@ -23,10 +23,10 @@ export function Crumbs({ trail }) {
 }
 
 /** Year wise / Topic wise switch for one exam. */
-export function ExamTabs({ exam, active }) {
+export function ExamTabs({ exam, active, stage = "" }) {
   return <nav className="pyq-seg" aria-label="Browse by">
-    <Link href={`/pyq/${exam.slug}/`} aria-current={active === "year" ? "page" : undefined}>Year wise</Link>
-    <Link href={`/pyq/${exam.slug}/topics/`} aria-current={active === "topic" ? "page" : undefined}>Topic wise</Link>
+    <Link href={withQuery(`/pyq/${exam.slug}/`, { stage })} aria-current={active === "year" ? "page" : undefined}>Year wise</Link>
+    <Link href={withQuery(`/pyq/${exam.slug}/topics/`, { stage })} aria-current={active === "topic" ? "page" : undefined}>Topic wise</Link>
   </nav>;
 }
 
@@ -58,7 +58,7 @@ export function Years({ years, openFirst = false }) {
           <small>{y.papers.length} paper{y.papers.length === 1 ? "" : "s"} · {n(total)} questions</small></span>
         <span className="muted pyq-year-stages">{stages.join(" · ")}</span></summary>
       <div className="pyq-stagebox">
-        {stages.map((stage) => {
+        {stages.length === 1 ? <Days papers={y.papers} /> : stages.map((stage) => {
           const papers = y.papers.filter((p) => p.stage === stage);
           return <details key={stage} className="pyq-acc pyq-stage">
             <summary><strong>{stage}</strong><span className="muted">{papers.length} paper{papers.length === 1 ? "" : "s"}</span></summary>
@@ -139,7 +139,7 @@ function Solution({ q }) {
     {q.explanation && <div className="rich"><Rich>{q.explanation}</Rich></div>}
     {notes.length > 0 && <ul className="pyq-option-notes">{notes.map((o) => <li key={o.label}><strong>{o.label}.</strong> <Rich inline>{o.explanation}</Rich></li>)}</ul>}
     {q.explanation_hi && <details lang="hi"><summary>हिन्दी में समाधान</summary><div className="rich"><Rich>{q.explanation_hi}</Rich></div></details>}
-    <p className="pyq-source">Answer: {q.paper.practice ? "Third-party key, not SSC's" : SOURCE[q.answer_source]}{q.explanation_source && ` · Solution: ${SOURCE[q.explanation_source]}`}
+    <p className="pyq-source">Answer: {q.paper.practice ? "Memory-based paper, key not from SSC" : SOURCE[q.answer_source]}{q.explanation_source && ` · Solution: ${SOURCE[q.explanation_source]}`}
       {q.section.marks_correct && ` · +${q.section.marks_correct}${q.section.marks_wrong ? ` / −${q.section.marks_wrong}` : ""} marks`}</p>
   </>;
 }
@@ -153,9 +153,9 @@ function Hindi({ q }) {
   </details>;
 }
 
-function Item({ q, viewer }) {
+function Item({ q, viewer, skillPractice }) {
   if (q.locked) return <PyqQuestion q={q} viewer={viewer} />;
-  return <PyqQuestion q={q} viewer={viewer}
+  return <PyqQuestion q={q} viewer={viewer} skillPractice={skillPractice}
     stem={<Rich>{q.text}</Rich>}
     options={q.options.map((o) => <Rich inline key={o.label}>{o.text}</Rich>)}
     passage={q.passage && <div className="passage rich"><Rich>{q.passage.text}</Rich></div>}
@@ -164,7 +164,7 @@ function Item({ q, viewer }) {
 }
 
 /** The question list with the sign-up wall, notices and previous / next links. `pageHref(n)` builds the link to page n. */
-export function QuestionFeed({ data, pageHref }) {
+export function QuestionFeed({ data, pageHref, skillPractice = false }) {
   const anon = data.viewer === "anonymous";
   const hidden = anon ? Math.max(0, data.total - data.free_preview) : 0;
   return <>
@@ -172,7 +172,7 @@ export function QuestionFeed({ data, pageHref }) {
     {data.viewer === "member" && <p className="notice">Worked explanations are part of Premium. <Link href="/plans/">See Premium</Link></p>}
     {data.questions.length ? <>
       <p className="muted">{data.total} question{data.total === 1 ? "" : "s"} · page {data.page} of {data.pages}</p>
-      <div className="pyq-list">{data.questions.map((q) => <Item key={q.id} q={q} viewer={data.viewer} />)}</div>
+      <div className="pyq-list">{data.questions.map((q) => <Item key={q.id} q={q} viewer={data.viewer} skillPractice={skillPractice} />)}</div>
       <nav className="actions" aria-label="Pages">
         {data.page > 1 && <Link className="button secondary" rel="prev" href={pageHref(data.page - 1)}>← Previous</Link>}
         {data.page < data.pages && <Link className="button secondary" rel="next" href={pageHref(data.page + 1)}>Next →</Link>}
@@ -191,13 +191,15 @@ export async function ExamSwitch({ current }) {
 }
 
 /** An exam's landing content: papers by year, with a link to the topic view. */
-export async function ExamLanding({ exam }) {
-  const papers = exam.years.reduce((s, y) => s + y.papers.length, 0);
+export async function ExamLanding({ exam, stage }) {
+  const years = stage ? exam.years.map((year) => ({ ...year, papers: year.papers.filter((paper) => paper.stage === stage) }))
+    .filter((year) => year.papers.length) : exam.years;
+  const papers = years.flatMap((year) => year.papers);
   return <>
-    <div className="page-head pyq-cover"><span className="eyebrow">SSC {exam.code} · Paper archive</span><h1>Previous year papers</h1>
-      <p>{n(papers)} papers · {n(exam.questions)} questions · {exam.years.length} exam years</p></div>
+    <div className="page-head pyq-cover"><span className="eyebrow">SSC {exam.code} · {stage || "Paper archive"}</span><h1>Previous year papers</h1>
+      <p>{n(papers.length)} papers · {n(papers.reduce((sum, paper) => sum + paper.questions, 0))} questions · {years.length} exam years</p></div>
     <ExamSwitch current={exam.slug} />
-    <ExamTabs exam={exam} active="year" />
-    <Years years={exam.years} />
+    <ExamTabs exam={exam} active="year" stage={stage} />
+    <Years years={years} />
   </>;
 }

@@ -27,7 +27,7 @@
       100% { opacity: 1 }
     }
   </style>
-  <g id="signature" transform="translate(13 -2) skewX(-13)" fill="#F3633D">
+  <g id="signature" transform="translate(13 -2) skewX(-13)" fill="#5B8DEF">
     <use class="solid" href="#sp"/>
     <use class="trace" href="#sp" mask="url(#ink)"/>
   </g>

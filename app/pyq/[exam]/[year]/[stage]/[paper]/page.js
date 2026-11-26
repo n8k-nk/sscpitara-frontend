@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import PyqMockStart from "../../../../../../components/PyqMockStart";
 import { metadata as pageMetadata } from "../../../../../../lib/public";
 import { examBySlug, getOverview, getQuestions, pageOf, paperLabel, papersOf } from "../../../../../../lib/pyq";
 import { Crumbs, QuestionFeed, withQuery } from "../../../../_ui";
@@ -33,7 +32,6 @@ export default async function PaperPage({ params, searchParams }) {
       { name: `${paper.stage} ${paperLabel(paper)}`, href: base }]} />
     <div className="page-head"><span className="eyebrow">SSC {exam.code} {year} · {paper.stage}</span><h1>SSC {exam.code} {paper.stage} question paper, {paperLabel(paper)}</h1>
       <p>{paper.questions} questions{paper.shift_time ? ` · ${paper.shift_time}` : ""}, with answers.</p></div>
-    {paper.mock_available && data.viewer === "premium" && <PyqMockStart paper={paper} />}
     <QuestionFeed data={data} pageHref={(p) => withQuery(base, { page: p > 1 ? p : "" })} />
   </>;
 }

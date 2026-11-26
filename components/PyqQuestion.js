@@ -2,7 +2,9 @@
 import Link from "next/link";
 import { useState } from "react";
 import { send } from "../lib/client";
+import QuestionTutor from "./QuestionTutor";
 import { openSignup } from "./PyqSignup";
+import { useQuestionView } from "../lib/question-view";
 
 const TYPE = { multiple: "More than one correct", numeric: "Numerical answer", text: "Short answer", descriptive: "Descriptive" };
 
@@ -26,7 +28,8 @@ export default function PyqQuestion(props) {
   return props.q.locked ? <Locked q={props.q} /> : <Live {...props} />;
 }
 
-function Live({ q, viewer, stem, options, passage, solution, hindi }) {
+function Live({ q, viewer, stem, options, passage, solution, hindi, skillPractice = false }) {
+  const questionView = useQuestionView(viewer !== "anonymous" && !q.viewed ? q.id : null);
   const premium = viewer === "premium";
   const [result, setResult] = useState(q.attempt && {
     correct: q.attempt.correct, response: q.attempt.response, answer: q.answer,
@@ -36,7 +39,7 @@ function Live({ q, viewer, stem, options, passage, solution, hindi }) {
   const [typed, setTyped] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  const [explain, setExplain] = useState(false);
+  const [explain, setExplain] = useState(Boolean(skillPractice && q.attempt && !q.attempt.correct));
   const anon = viewer === "anonymous";
   const labels = result ? result.labels : q.options.filter((o) => o.correct).map((o) => o.label);
   const chosen = result && Array.isArray(result.response) ? result.response : picked;
@@ -51,6 +54,7 @@ function Live({ q, viewer, stem, options, passage, solution, hindi }) {
     if (status === 401) return openSignup();
     if (!ok) return setError(data.error ?? "Could not save your answer.");
     setResult({ correct: data.correct, response: data.response, answer: data.answer, labels: data.correct_labels });
+    if (skillPractice && !data.correct) setExplain(true);
   }
 
   function choose(label) {
@@ -79,7 +83,7 @@ function Live({ q, viewer, stem, options, passage, solution, hindi }) {
       {TYPE[q.type] && <span className="badge">{TYPE[q.type]}</span>}
     </header>
     {passage}
-    <div className="pyq-q rich"><strong>Q{q.number}.</strong> {stem}</div>
+    <div className="pyq-q rich" ref={questionView}><strong>Q{q.number}.</strong> {stem}</div>
 
     {q.dropped && <p><span className="badge warn">Dropped by SSC</span> This question was cancelled in the final answer key.</p>}
 
@@ -101,13 +105,17 @@ function Live({ q, viewer, stem, options, passage, solution, hindi }) {
 
     {result && <p className={`pyq-verdict ${result.correct ? "ok" : "bad"}`} role="status">
       <strong>{result.correct ? "Correct!" : "Not quite."}</strong>{" "}
-      {!result.correct && (objective ? `The correct answer is ${labels.join(", ")}.` : shownAnswer && `The answer is ${answerLine(shownAnswer)}.`)}{" "}
-      <button type="button" className="ghost" onClick={() => { setResult(null); setPicked([]); setTyped(""); setExplain(false); }}>Try again</button></p>}
+      {!result.correct && (objective ? `The correct answer is ${labels.join(", ")}.` : shownAnswer && `The answer is ${answerLine(shownAnswer)}.`)}
+      {!(skillPractice && !result.correct) && <>{" "}
+        <button type="button" className="ghost" onClick={() => { setResult(null); setPicked([]); setTyped(""); setExplain(false); }}>Try again</button></>}</p>}
+    {result && q.skill && !skillPractice && <p className="pyq-learn"><Link href={q.skill.href}>Learn this skill: {q.skill.title} →</Link></p>}
     {!objective && !result && shownAnswer && anon && <p><span className="badge ok">Answer: {answerLine(shownAnswer)}</span></p>}
 
-    {!q.dropped && <div className="pyq-explain">
-      <button type="button" className="secondary" aria-expanded={explain} onClick={() => setExplain((x) => !x)}>{explain ? "Hide explanation" : "View explanation"}</button>
-      {explain && (premium ? <div className="pyq-solution">{solution}</div> :
+    {(!q.dropped || (q.tutor_available && !result?.correct)) && <div className="pyq-foot">
+      {!q.dropped && <button type="button" className="secondary" aria-expanded={explain} onClick={() => setExplain((x) => !x)}>{explain ? "Hide explanation" : "View explanation"}</button>}
+      {q.tutor_available && !result?.correct && <QuestionTutor key={result ? "mistake" : "hint"}
+        mode={result ? "mistake" : "hint"} question={q.id} />}
+      {!q.dropped && explain && (premium ? <div className="pyq-solution">{solution}</div> :
         <div className="pyq-upsell" role="note">
           <strong>Explanations are a Premium feature.</strong>
           <p>Get step-by-step worked solutions and short-cut methods for every question, right or wrong.</p>

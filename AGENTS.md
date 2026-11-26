@@ -1,3 +1,7 @@
+# Project context
+
+Read `PROJECT_HANDOFF.md` at the start of a session. Follow its maintenance instructions when the product state or next task changes.
+
 <!-- BEGIN:nextjs-agent-rules -->
 
 ## This is NOT the Next.js you know

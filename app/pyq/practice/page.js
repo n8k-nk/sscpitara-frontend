@@ -6,14 +6,14 @@ import { QuestionFeed, query, withQuery } from "../_ui";
 // The filter tool. Real, indexable pages live at /pyq/<exam>/…; this one is for ad-hoc combinations.
 export const metadata = { title: "Practice previous year questions", robots: { index: false, follow: true } };
 
-const KEYS = ["exam", "year", "stage", "paper", "subject", "topic", "subtopic", "difficulty", "learn_part"];
+const KEYS = ["exam", "year", "stage", "paper", "subject", "topic", "subtopic", "difficulty"];
 
 export default async function Practice({ searchParams }) {
   const params = await searchParams;
   const one = (k) => (typeof params[k] === "string" ? params[k] : "");
   const filters = Object.fromEntries(KEYS.map((k) => [k, one(k)]));
   // Practice always works on one paper, subject or topic, never on the whole bank.
-  if (!["paper", "subject", "topic", "subtopic", "learn_part"].some((k) => filters[k])) redirect("/pyq/");
+  if (!["paper", "subject", "topic", "subtopic"].some((k) => filters[k])) redirect("/pyq/");
   const data = await getQuestions(query({ ...filters, page: pageOf(params.page) }));
   const f = data.facets;
   const select = (name, label, options) => <label>{label}

@@ -8,14 +8,16 @@ import rehypeKatex from "rehype-katex";
 const remark = [remarkMath, remarkGfm];
 const rehype = [[rehypeKatex, { strict: false, throwOnError: false }]];
 
-const img = ({ src, alt }) => typeof src === "string" && src.startsWith("/media/")
+const isLocalImage = (src) => typeof src === "string" && src.startsWith("/media/");
+const isMockImage = (src) => typeof src === "string" && /^\/api\/study\/attempts\/\d+\/\d+\/assets\/\d+\/$/.test(src);
+const img = ({ src, alt }) => isMockImage(src) ? <img className="diagram" src={src} alt={alt ?? ""} /> : isLocalImage(src)
   ? <a href={src} target="_blank" rel="noopener"><img className="diagram" src={src} alt={alt ?? ""} loading="lazy" /></a>
   : null;
 
-export default function Rich({ children, inline = false, interactive = true }) {
+export default function Rich({ children, inline = false, interactive = true, images = true }) {
   if (!children) return null;
   const components = {
-    img: interactive ? img : ({ src, alt }) => typeof src === "string" && src.startsWith("/media/")
+    img: !images ? () => null : interactive ? img : ({ src, alt }) => isLocalImage(src) || isMockImage(src)
       ? <img className="diagram" src={src} alt={alt ?? ""} /> : null,
     ...(!interactive && { a: ({ children }) => <>{children}</> }),
     ...(inline && { p: ({ children }) => <>{children}</> }),

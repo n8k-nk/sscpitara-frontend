@@ -13,11 +13,13 @@ export async function generateMetadata({ params }) {
     `Free SSC ${exam.code} previous year papers: ${exam.years.reduce((s, y) => s + y.papers.length, 0)} shifts and ${exam.questions.toLocaleString("en-IN")} questions with answers, by year, date and shift.`, `/pyq/${exam.slug}/`);
 }
 
-export default async function ExamPage({ params }) {
+export default async function ExamPage({ params, searchParams }) {
   const exam = await load((await params).exam);
   if (!exam) notFound();
+  const { stage } = await searchParams;
+  const chosen = exam.years.some((year) => year.papers.some((paper) => paper.stage === stage)) ? stage : "";
   return <>
     <Crumbs trail={[{ name: "PYQs", href: "/pyq/" }, { name: `SSC ${exam.code}`, href: `/pyq/${exam.slug}/` }]} />
-    <ExamLanding exam={exam} />
+    <ExamLanding exam={exam} stage={chosen} />
   </>;
 }

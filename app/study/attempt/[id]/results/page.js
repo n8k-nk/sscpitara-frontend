@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Figures from "../../../../../components/Figures";
+import MockReport from "./MockReport";
 import ResultTools from "../../../../../components/ResultTools";
 import Rich from "../../../../../components/Rich";
 import { need } from "../../../../../lib/server";
@@ -8,54 +9,54 @@ import { need } from "../../../../../lib/server";
 export const metadata = { title: "Results", robots: { index: false } };
 
 const TONE = { Correct: "ok", Incorrect: "bad", Skipped: "off" };
-const STOP = { tab_switch: "Submitted after switching tabs", fullscreen_exit: "Submitted after exiting fullscreen",
-  page_exit: "Submitted after leaving the test", time_expired: "Time expired" };
-
-function MockSummary({ rows, reason }) {
-  const sections = new Map();
-  for (const row of rows) {
-    const s = sections.get(row.section_name) ?? { correct: 0, incorrect: 0, skipped: 0, seconds: 0 };
-    s[row.outcome.toLowerCase()] += 1;
-    s.seconds += row.seconds;
-    sections.set(row.section_name, s);
-  }
-  return <section aria-label="Mock analysis">
-    {STOP[reason] && <p className="notice">{STOP[reason]}</p>}
-    <h2>Section breakdown</h2>
-    <ul className="rows">{[...sections.entries()].map(([section, s]) => <li key={section}><strong>{section}</strong>
-      <span className="muted">{s.correct} correct · {s.incorrect} incorrect · {s.skipped} skipped · {s.seconds}s observed</span>
-    </li>)}</ul>
-  </section>;
-}
-
-export default async function Results({ params }) {
+export default async function Results({ params, searchParams }) {
   const { id } = await params;
-  const d = await need(`study/attempts/${id}/results`, `/study/attempt/${id}/results/`);
+  const query = await searchParams;
+  const review = query.view === "review" || typeof query.q === "string";
+  const options = new URLSearchParams({ view: review ? "review" : "overview" });
+  if (review) {
+    for (const key of ["page", "outcome", "section", "topic", "q"]) {
+      if (typeof query[key] === "string" && query[key]) options.set(key, query[key]);
+    }
+  }
+  const base = `/study/attempt/${id}/results/`;
+  const d = await need(`study/attempts/${id}/results`, base, options.toString());
   if (!d) notFound();
-  const mock = d.kind === "pyq-mock";
+  if (d.analysis && d.review) return <MockReport data={d} base={base} review={review} />;
+  const pyq = d.kind === "pyq-followup";
   return <>
-    <h1>{d.title}{mock ? " mock results" : " results"}</h1>
+    <h1>{d.title} results</h1>
     <div className="score"><div><strong>{d.score} marks</strong>
-      {!mock && <p>+{d.rules.correct} correct, {d.rules.wrong} incorrect, 0 skipped.</p>}
+      {!pyq && <p>+{d.rules.correct} correct, {d.rules.wrong} incorrect, 0 skipped.</p>}
       {d.changed_key && <p>Score after published answer-key corrections: <strong>{d.adjusted_score}</strong>.</p>}</div>
-      <Link className="button arrow" href={mock ? `/pyq/${d.rules.source.path}/` : "/study/"}>{mock ? "Back to paper" : "See your next study task"}</Link></div>
-    {mock && <MockSummary rows={d.rows} reason={d.rules.finish_reason} />}
+      <Link className="button arrow" href="/analytics/plan/">See your next study task</Link></div>
+    {d.practice_breakdown && <section className="card"><h2>First-choice accuracy</h2>
+      <p className="muted">Your first saved choice counts here. The marks above use your final answers.</p>
+      {d.rules.recommendation.answered > 0 && <p>In the original mock, you got {d.rules.recommendation.correct} of {d.rules.recommendation.answered} answered {d.rules.recommendation.topic} questions right.</p>}
+      <ul className="rows">{["fresh", "review"].map((key) => {
+        const g = d.practice_breakdown[key];
+        if (!g.total) return null;
+        return <li key={key}><strong>{key === "fresh" ? "Fresh PYQs" : "Reviewed questions"}</strong>
+          <span>{g.answered ? `${g.correct}/${g.answered} correct (${Math.round(100 * g.correct / g.answered)}%)` : "No answers"}
+            {g.total > g.answered && ` · ${g.total - g.answered} unanswered`}</span></li>;
+      })}</ul>
+      <Link href={`/study/attempt/${d.rules.recommendation.mock}/results/`}>View original mock</Link>
+    </section>}
     {d.rows.map((row) => <article className="result-card" id={`q${row.position}`} key={row.position}>
-      <div className="q-meta"><small>{row.subject} · {row.topic}</small><span className={`badge ${TONE[row.outcome]}`}>{row.outcome}</span>
-        {mock && <small>{row.marks} marks · {row.seconds}s observed</small>}</div>
-      <h2>{row.number ?? row.position}. {mock ? <Rich inline>{row.prompt}</Rich> : row.prompt}</h2>
-      {row.passage && (mock ? <div className="passage rich"><Rich>{row.passage}</Rich></div> : <p className="passage lesson">{row.passage}</p>)}
+      <div className="q-meta"><small>{row.subject} · {row.topic}</small><span className={`badge ${TONE[row.outcome]}`}>{row.outcome}</span></div>
+      <h2>{row.number ?? row.position}. {pyq ? <Rich inline>{row.prompt}</Rich> : row.prompt}</h2>
+      {row.passage && (pyq ? <div className="passage rich"><Rich>{row.passage}</Rich></div> : <p className="passage lesson">{row.passage}</p>)}
       <Figures figures={row.media.passage} /><Figures figures={row.media.prompt} />
       {row.diagram_url && <img className="diagram" src={row.diagram_url} alt="Question diagram" />}
       {row.options.filter((o) => o.images.length).map((o) => <div key={o.label}>{o.label} <Figures figures={o.images} /></div>)}
-      <div className="answer-box">{row.selected && <p>Your answer: {mock ? <Rich inline>{row.selected}</Rich> : row.selected}</p>}
-        <p><strong>Answer: {mock ? <Rich inline>{row.correct}</Rich> : row.correct}</strong></p></div>
-      {mock ? <div className="explanation rich"><Rich>{row.explanation}</Rich></div> : <p className="explanation lesson">{row.explanation}</p>}
+      <div className="answer-box">{row.selected && <p>Your answer: {pyq ? <Rich inline>{row.selected}</Rich> : row.selected}</p>}
+        <p><strong>Answer: {pyq ? <Rich inline>{row.correct}</Rich> : row.correct}</strong></p></div>
+      {pyq ? <div className="explanation rich"><Rich>{row.explanation}</Rich></div> : <p className="explanation lesson">{row.explanation}</p>}
       {row.updated ? <details className="disclosure"><summary>Editorial update · version {row.updated.version}</summary>
         <p>{row.updated.prompt}</p><p>Current answer: {row.updated.answer}</p><p className="lesson">{row.updated.explanation}</p></details>
         : row.withdrawn && <p className="notice">This item has been withdrawn. Your result uses the version you attempted.</p>}
       {row.explanation_hi && <details className="disclosure"><summary>हिन्दी</summary>
-        {mock ? <div className="rich" lang="hi"><Rich>{row.explanation_hi}</Rich></div> : <p className="lesson">{row.explanation_hi}</p>}</details>}
+        {pyq ? <div className="rich" lang="hi"><Rich>{row.explanation_hi}</Rich></div> : <p className="lesson">{row.explanation_hi}</p>}</details>}
       <ResultTools id={d.id} position={row.position} bookmarked={row.bookmarked} />
     </article>)}
   </>;

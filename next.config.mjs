@@ -6,8 +6,14 @@ const backend = process.env.DJANGO_ORIGIN ?? "http://127.0.0.1:8024";
 export default {
   trailingSlash: true,
   allowedDevOrigins: ["127.0.0.1"],
-  experimental: { proxyClientMaxBodySize: 64 * 1024 * 1024 },
+  experimental: { proxyClientMaxBodySize: 64 * 1024 * 1024, proxyTimeout: 150_000 },
   turbopack: { root: fileURLToPath(new URL(".", import.meta.url)) },
+  async redirects() {
+    return [
+      { source: "/arena/:path*", destination: "/games/:path*", permanent: true },
+      { source: "/billing/", destination: "/plans/", permanent: false },
+    ];
+  },
   async rewrites() {
     return [
       { source: "/api/:rest*", destination: `${backend}/api/:rest*/` },

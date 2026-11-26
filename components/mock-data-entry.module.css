@@ -1,0 +1,48 @@
+.session { color-scheme: dark; box-sizing: border-box; margin-block: 0; color: #fafafa; }
+.session h1, .session h2, .session label { color: inherit; }
+.session h1 { margin: 0; font-size: clamp(1.25rem, 2.4vw, 1.6rem); }
+.title { margin: 0 0 .1rem; color: #b5b5bf; font-size: .875rem; }
+
+.intro { width: min(100% - 2rem, 38rem); margin: 3rem auto; padding: 1.75rem; border: 1px solid #3a3a40; border-radius: .75rem; background: #161618; }
+.intro h1 + p { margin-top: .9rem; }
+.intro ul { padding-left: 1.2rem; color: #d4d4da; }
+.intro li { margin-bottom: .35rem; }
+
+/* The typing screen fills the window: passage and response side by side, each scrolling on its own. */
+.typing { display: flex; flex-direction: column; gap: .9rem; width: min(100%, 96rem); height: 100%; min-height: 30rem; margin-inline: auto; padding: 1rem 1.25rem; border: 0; border-radius: 0; background: transparent; }
+.bar { display: flex; justify-content: space-between; align-items: center; gap: .75rem; padding-bottom: .75rem; border-bottom: 1px solid #2a2a30; }
+.timer { flex: none; padding: .3rem .9rem; border: 1px solid #3a3a40; border-radius: .6rem; text-align: right; }
+.timer small { display: block; color: #b5b5bf; font-size: .72rem; }
+.timer strong { font-size: 1.6rem; line-height: 1.15; font-variant-numeric: tabular-nums; }
+.timer[data-level="low"] { border-color: #a16207; background: #2a1f08; color: #fbbf24; }
+.timer[data-level="last"] { border-color: #b91c1c; background: #2d0f10; color: #f87171; }
+.work { display: grid; flex: 1; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; min-height: 0; }
+.pane { display: flex; flex-direction: column; min-width: 0; min-height: 0; margin: 0; }
+.paneHead { display: flex; justify-content: space-between; align-items: center; gap: .5rem; min-height: 2.25rem; margin-bottom: .4rem; }
+.paneHead h2, .paneHead label { margin: 0; font-size: .9rem; font-weight: 650; }
+.zoom { display: flex; gap: .3rem; }
+.session .zoom button { min-width: 2.4rem; min-height: 2rem; padding: 0 .5rem; border: 1px solid #3a3a40; background: #161618; color: #fafafa; font-size: .85rem; }
+.save { color: #b5b5bf; font-size: .82rem; }
+.save[data-state="saved"] { color: #4ade80; }
+.save[data-state="error"] { color: #f87171; font-weight: 650; }
+.passage, .session textarea { box-sizing: border-box; flex: 1; width: 100%; min-height: 0; margin: 0; padding: 1rem 1.15rem; border: 1px solid #3a3a40; border-radius: .6rem; line-height: 1.75; overflow-y: auto; }
+.passage { background: #161618; color: #fafafa; white-space: pre-wrap; user-select: none; }
+.session textarea { background: #0c0c0e; color: #fafafa; resize: none; }
+.session textarea:focus { border-color: var(--accent); }
+.footer { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: .75rem 1.5rem; }
+.stats { flex: 1; min-width: 14rem; }
+.stats p { margin: .35rem 0 0; color: #b5b5bf; font-size: .875rem; font-variant-numeric: tabular-nums; }
+.stats strong { color: #fafafa; }
+.meter { height: .35rem; overflow: hidden; border-radius: 999px; background: #2a2a30; }
+.meter span { display: block; height: 100%; background: var(--accent); }
+.stats .notice { color: #fbbf24; }
+.confirm { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: .5rem; }
+
+@media (max-width: 860px) {
+  .typing { gap: .6rem; min-height: 34rem; padding: .75rem; }
+  .work { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) minmax(0, 1fr); gap: .6rem; }
+  .passage, .session textarea { padding: .7rem .8rem; line-height: 1.6; }
+  .footer > button, .confirm { width: 100%; }
+  .confirm span { width: 100%; }
+  .confirm button { flex: 1; }
+}

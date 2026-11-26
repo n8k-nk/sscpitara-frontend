@@ -32,11 +32,9 @@ export default function PyqMockStart({ paper }) {
     setBusy(false);
   }
 
-  return <details className="pyq-mock-start">
-    <summary>Attempt as a mock <span className="badge">Premium</span></summary>
-    <p>{paper.duration_minutes} minutes · {paper.questions} questions</p>
-    <p>Stay on this tab and keep fullscreen open. Leaving the tab or fullscreen submits your saved answers. If you already have a mock in progress, you’ll resume it.</p>
-    <button type="button" disabled={busy} onClick={start}>{busy ? "Opening mock…" : "Start timed mock"}</button>
+  return <div>
+    <button type="button" disabled={busy} onClick={start} aria-label={`Start timed mock for ${paper.title}`}>
+      {busy ? "Opening mock…" : "Start mock"}</button>
     {error && <p className="errorlist" role="alert">{error}</p>}
-  </details>;
+  </div>;
 }

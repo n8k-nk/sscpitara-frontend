@@ -3,9 +3,9 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { send } from "../lib/client";
 
-export default function MockFrame({ id, children }) {
+export default function MockFrame({ id, children, proctored = true }) {
   const router = useRouter();
-  const [ready, setReady] = useState(false);
+  const [ready, setReady] = useState(!proctored);
   const [ending, setEnding] = useState(false);
   const [error, setError] = useState("");
   const frame = useRef(null);
@@ -33,13 +33,14 @@ export default function MockFrame({ id, children }) {
   }
 
   useEffect(() => {
+    const chrome = [...document.querySelectorAll(".site-header, .site-sidebar, .site-footer, .skip")].filter((node) => !node.inert);
+    chrome.forEach((node) => { node.inert = true; });
+    frame.current?.focus({ preventScroll: true });
+    if (!proctored) return () => chrome.forEach((node) => { node.inert = false; });
     clearTimeout(exitTimer.current);
     try { reason.current = sessionStorage.getItem(key); } catch { /* optional recovery */ }
     active.current = !document.fullscreenEnabled || Boolean(document.fullscreenElement);
     setReady(active.current);
-    frame.current?.focus({ preventScroll: true });
-    const chrome = [...document.querySelectorAll(".site-header, .site-footer, .skip")].filter((node) => !node.inert);
-    chrome.forEach((node) => { node.inert = true; });
     if (reason.current) submit(reason.current);
     else if (document.hidden) submit("tab_switch");
 
@@ -71,9 +72,9 @@ export default function MockFrame({ id, children }) {
         if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
       }, 0);
     };
-  }, [id]);
+  }, [id, proctored]);
 
-  return <div className="mock-frame" ref={frame} tabIndex={-1} role="dialog" aria-modal="true" aria-label="Timed PYQ mock"><div className="mock-inner">
+  return <div className="mock-frame" ref={frame} tabIndex={-1} role="dialog" aria-modal="true" aria-label="Timed mock test"><div className="mock-inner">
     {ending ? <div className="notice" role="status">
       <p>{error || "Submitting your saved answers…"}</p>
       {error && <button type="button" onClick={() => submit(reason.current)}>Retry submission</button>}

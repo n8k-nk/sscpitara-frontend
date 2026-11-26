@@ -1,11 +1,13 @@
-import Link from "next/link";
 import { cookies } from "next/headers";
 import { site, indexable } from "../lib/public";
 import { session } from "../lib/server";
-import SignOut from "../components/SignOut";
 import ThemeToggle from "../components/ThemeToggle";
 import Capture from "../components/Capture";
-import { NavLink } from "../components/Nav";
+import AppShell from "../components/AppShell";
+import SiteFooter from "../components/SiteFooter";
+import ExamPicker from "../components/ExamPicker";
+import { studyContext } from "../lib/study-scope";
+import { Suspense } from "react";
 import "katex/dist/katex.min.css";
 import "./style.css";
 
@@ -22,36 +24,22 @@ export async function generateViewport() {
 }
 
 
+async function HeaderExam() {
+  const study = await studyContext();
+  return study.selected ? <ExamPicker {...study} /> : null;
+}
+
 export default async function Layout({ children }) {
-  const user = await session();
-  const theme = await themeOf();
+  const [user, theme, jar] = await Promise.all([session(), themeOf(), cookies()]);
   return <html lang="en" data-theme={theme} suppressHydrationWarning><body>
     <Capture />
     <a className="skip" href="#main">Skip to content</a>
-    <header className="site-header"><div className="bar">
-      <Link className="brand" href="/"><img src="/icon.svg#signature" width="48" height="40" alt="" /><span className="brand-name"><b>SSC</b> Pitara</span></Link>
-      <nav className="site-nav" aria-label="Main">
-        <NavLink href="/pyq/" match={["/pyq"]}>PYQs</NavLink>
-        <NavLink href="/learn/" match={["/learn", "/study/learn"]}>Learn</NavLink>
-        {user.authenticated ? <>
-          <NavLink href="/study/">Today</NavLink>
-          <NavLink href="/study/practice/" match={["/study/practice", "/study/attempt"]}>Practice</NavLink>
-          <NavLink href="/study/progress/">Progress</NavLink>
-          <span className="divider" aria-hidden="true" />
-          <NavLink href="/account/" match={["/account", "/onboarding"]}>My SSC profile</NavLink>
-          <SignOut />
-        </> : <>
-          <span className="divider" aria-hidden="true" />
-          <NavLink href="/signin/">Sign in</NavLink><Link className="nav-cta" href="/signup/">Sign up</Link>
-        </>}
-        <ThemeToggle />
-      </nav>
-    </div></header>
-    <main id="main">{children}</main>
-    <footer className="site-footer"><div className="bar">
-      <nav aria-label="Footer"><Link href="/exams/">Exam directory</Link><Link href="/pyq/">Free PYQs</Link><Link href="/learn/">Free lessons</Link><Link href="/plans/">Free coverage</Link>
-        {user.authenticated ? <><Link href="/account/recovery/">Recovery email</Link><Link href="/support/">Support</Link></> : <Link href="/signin/">Sign in</Link>}</nav>
-      <p>Free SSC preparation. Always confirm details in the official SSC notice.</p>
-    </div></footer>
+    <AppShell
+      collapsed={jar.get("sidebar")?.value === "collapsed"}
+      exam={<Suspense fallback={null}><HeaderExam /></Suspense>}
+      controls={<ThemeToggle />}
+      authenticated={Boolean(user.authenticated)}
+      footer={<SiteFooter authenticated={user.authenticated} />}
+    >{children}</AppShell>
   </body></html>;
 }

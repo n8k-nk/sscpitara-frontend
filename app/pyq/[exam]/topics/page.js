@@ -23,7 +23,7 @@ export default async function TopicsPage({ params, searchParams }) {
     <div className="page-head pyq-cover"><span className="eyebrow">SSC {exam.code} · Previous year questions</span><h1>Topic-wise practice</h1>
       <p>Choose a topic to practise previous year questions. The most frequently asked topics appear first.</p></div>
     <ExamSwitch current={exam.slug} />
-    <ExamTabs exam={exam} active="topic" />
+    <ExamTabs exam={exam} active="topic" stage={one("stage")} />
     <Topics exam={exam} year={year} subject={one("subject")} stage={one("stage")} />
   </>;
 }
