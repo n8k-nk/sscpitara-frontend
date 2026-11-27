@@ -29,8 +29,19 @@ async function HeaderExam() {
   return study.selected ? <ExamPicker {...study} /> : null;
 }
 
+async function ShellFooter() {
+  const user = await session();
+  return <SiteFooter authenticated={user.authenticated} premium={Boolean(user.premium)} />;
+}
+
 export default async function Layout({ children }) {
-  const [user, theme, jar] = await Promise.all([session(), themeOf(), cookies()]);
+  const [jar, rawUser] = await Promise.all([cookies(), session()]);
+  const theme = jar.get("theme")?.value === "light" ? "light" : "dark";
+  const user = {
+    authenticated: Boolean(rawUser.authenticated),
+    credits: rawUser.credits ?? 0,
+    premium: Boolean(rawUser.premium),
+  };
   return <html lang="en" data-theme={theme} suppressHydrationWarning><body>
     <Capture />
     <a className="skip" href="#main">Skip to content</a>
@@ -38,10 +49,8 @@ export default async function Layout({ children }) {
       collapsed={jar.get("sidebar")?.value === "collapsed"}
       exam={<Suspense fallback={null}><HeaderExam /></Suspense>}
       controls={<ThemeToggle />}
-      authenticated={Boolean(user.authenticated)}
-      credits={user.authenticated ? (user.credits ?? 0) : null}
-      premium={Boolean(user.premium)}
-      footer={<SiteFooter authenticated={user.authenticated} />}
+      user={user}
+      footer={<Suspense fallback={null}><ShellFooter /></Suspense>}
     >{children}</AppShell>
   </body></html>;
 }

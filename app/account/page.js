@@ -14,7 +14,7 @@ export default async function Account() {
       <div>
         <h2 id="security-title">Account settings</h2>
         <p className="muted" style={{ margin: ".25rem 0 0" }}>
-          AI Credits: <strong>{credits}</strong> · <Link href="/billing/">Billing &amp; Plan</Link>
+          AI Credits: <strong>{credits}</strong> · <Link href={user.premium ? "/billing/" : "/plans/"}>{user.premium ? "Billing" : "Plan"}</Link>
         </p>
       </div>
       <SignOut className={styles.action}>

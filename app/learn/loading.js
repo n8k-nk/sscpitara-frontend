@@ -1,1 +1,5 @@
-export { default } from "../../components/learn/OverviewSkeleton";
+import RouteSkeleton from "../../components/RouteSkeleton";
+
+export default function Loading() {
+  return <RouteSkeleton label="Learn" />;
+}

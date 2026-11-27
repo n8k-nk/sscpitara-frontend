@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "../../components/NavigationLink";
 import { redirect } from "next/navigation";
 import { studyContext } from "../../lib/study-scope";
 import { scopedPyqs } from "../../lib/study-scope-paths";

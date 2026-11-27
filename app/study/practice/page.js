@@ -1,4 +1,6 @@
-import Link from "next/link";
+import { Suspense } from "react";
+import RouteSkeleton from "../../../components/RouteSkeleton";
+import Link from "../../../components/NavigationLink";
 import { need } from "../../../lib/server";
 import { studyContext } from "../../../lib/study-scope";
 import MockList from "./MockList";
@@ -13,14 +15,22 @@ function catalogue(tier, mode, page = 1) {
   return `/study/practice/?tier=${tier}${mode === "mixed" ? "" : `&view=${mode}`}${page > 1 ? `&page=${page}` : ""}`;
 }
 
-export default async function Practice({ searchParams }) {
+export default function Practice({ searchParams }) {
+  return <div className={styles.catalogue}>
+    <header className={`page-head ${styles.head}`}><h1>Practice</h1><p>Take a full mock, sit a previous-year paper, or build a timed sectional test.</p></header>
+    <Suspense fallback={<RouteSkeleton label="practice options" variant="overview" inline />}>
+      <PracticeOptions searchParams={searchParams} />
+    </Suspense>
+  </div>;
+}
+
+async function PracticeOptions({ searchParams }) {
   const query = await searchParams;
-  const { selected } = await studyContext();
+  const { selected } = query.tier === "1" || query.tier === "2" ? {} : await studyContext();
   const tier = query.tier === "2" || (query.tier !== "1" && selected?.exam === "CGL" && selected.stage === "Tier II") ? 2 : 1;
   const mode = MODES.some(([key]) => key === query.view) ? query.view : "mixed";
   const params = new URLSearchParams({ stage: tier === 1 ? "Tier I" : "Tier II" }).toString();
-  return <div className={styles.catalogue}>
-    <header className={`page-head ${styles.head}`}><h1>Practice</h1><p>Take a full mock, sit a previous-year paper, or build a timed sectional test.</p></header>
+  return <>
     <div className={styles.switches}>
       <nav className={styles.segmented} aria-label="Practice mode">
         {MODES.map(([key, label, short]) => <Link key={key} aria-label={label} aria-current={mode === key ? "page" : undefined}
@@ -31,10 +41,16 @@ export default async function Practice({ searchParams }) {
         <Link aria-current={tier === 2 ? "page" : undefined} href={catalogue(2, mode)} prefetch={false}>Tier II{mode === "mixed" && <span className={styles.long}> · Paper I</span>}</Link>
       </nav>}
     </div>
-    {mode === "papers" ? <PaperMocks tier={tier} query={query} /> : mode === "sectional"
-      ? <SectionalBuilder key={tier} data={await need("study/sectional", catalogue(tier, mode), params)} />
-      : <FullMocks tier={tier} query={query} params={params} />}
-  </div>;
+    <Suspense key={`${tier}/${mode}`} fallback={<RouteSkeleton label="practice tests" variant="overview" inline />}>
+      {mode === "papers" ? <PaperMocks tier={tier} query={query} /> : mode === "sectional"
+        ? <Sectional tier={tier} params={params} /> : <FullMocks tier={tier} query={query} params={params} />}
+    </Suspense>
+  </>;
+}
+
+async function Sectional({ tier, params }) {
+  const data = await need("study/sectional", catalogue(tier, "sectional"), params);
+  return <SectionalBuilder key={tier} data={data} />;
 }
 
 function Format({ data, tier }) {

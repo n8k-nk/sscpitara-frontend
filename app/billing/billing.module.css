@@ -32,6 +32,25 @@
   font-size: 1.1rem;
 }
 
+.expiry {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: .35rem .75rem;
+  margin: .15rem 0 0;
+}
+
+.expiry strong {
+  color: var(--ink);
+  font-size: 1.8rem;
+  line-height: 1.15;
+  font-weight: 750;
+}
+
+.expiry span {
+  color: var(--muted);
+}
+
 .creditsNum {
   display: flex;
   align-items: baseline;

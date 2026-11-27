@@ -1,4 +1,6 @@
-import Link from "next/link";
+import { Suspense } from "react";
+import RouteSkeleton from "../../components/RouteSkeleton";
+import Link from "../../components/NavigationLink";
 import { notFound } from "next/navigation";
 import { metadata as pageMetadata, readNews } from "../../lib/public";
 import styles from "./news.module.css";
@@ -28,10 +30,6 @@ export default async function News({ searchParams }) {
   const lang = requested === "hi" ? "hi" : "en";
   if (page !== undefined && page !== "1" && page !== "2") notFound();
   const current = page === "2" ? 2 : 1;
-  const data = await readNews(lang).catch(() => null);
-  const start = (current - 1) * 10;
-  const stories = data?.stories.slice(start, start + 10);
-
   return <section className={styles.news}>
     <header className={styles.masthead}>
       <h1>SSC Pitara News</h1>
@@ -43,6 +41,23 @@ export default async function News({ searchParams }) {
         </nav>
       </div>
     </header>
+    <Suspense key={`${lang}/${current}`} fallback={<RouteSkeleton label="top stories" inline />}>
+      <NewsStories lang={lang} current={current} />
+    </Suspense>
+    <nav className={styles.pagination} aria-label="News pages">
+      <Link className="button secondary" href={newsHref(lang)} aria-current={current === 1 ? "page" : undefined}>1</Link>
+      <Link className="button secondary" href={newsHref(lang, 2)} aria-current={current === 2 ? "page" : undefined}>2</Link>
+    </nav>
+  </section>;
+}
+
+
+async function NewsStories({ lang, current }) {
+  const data = await readNews(lang).catch(() => null);
+  const start = (current - 1) * 10;
+  const stories = data?.stories.slice(start, start + 10);
+
+  return <>
     {!data ? <p className="notice">Top stories are temporarily unavailable. Please try again shortly.</p>
       : !stories.length ? <p className="notice">There are no top stories on this page right now.</p>
       : <ol className={styles.stories} role="list" lang={lang} start={start + 1}>{stories.map((story) => <li key={story.source_url}>
@@ -58,9 +73,5 @@ export default async function News({ searchParams }) {
           </div>
         </div>
       </li>)}</ol>}
-    <nav className={styles.pagination} aria-label="News pages">
-      <Link className="button secondary" href={newsHref(lang)} aria-current={current === 1 ? "page" : undefined}>1</Link>
-      <Link className="button secondary" href={newsHref(lang, 2)} aria-current={current === 2 ? "page" : undefined}>2</Link>
-    </nav>
-  </section>;
+  </>;
 }

@@ -48,6 +48,30 @@
 .intro, .googleStatus, .switchAccount { color: var(--muted); }
 .intro { margin: 0 0 1.5rem; }
 
+.google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 48px;
+  gap: .65rem;
+  padding: .5rem 1rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--ink);
+  font: 600 .95rem/1.2 var(--sans);
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color .15s, background-color .15s;
+}
+
+.google:hover:not(:disabled),
+.google:focus-visible:not(:disabled) {
+  background: var(--alt);
+  border-color: var(--faint);
+}
+
 .google:disabled {
   width: 100%;
   min-height: 48px;
@@ -56,6 +80,7 @@
   background: var(--alt);
   border-color: var(--line-strong);
   color: var(--muted);
+  cursor: not-allowed;
 }
 
 .googleStatus {
@@ -112,6 +137,29 @@
 .switchAccount a:hover {
   background: var(--accent);
   color: var(--on-accent);
+}
+
+.footerLinks {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: .45rem 1.15rem;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.footerLinks a {
+  color: var(--muted);
+  font-size: .84rem;
+  text-decoration: none;
+  transition: color .15s;
+}
+
+.footerLinks a:hover,
+.footerLinks a:focus-visible {
+  color: var(--ink);
+  text-decoration: underline;
 }
 
 .study {

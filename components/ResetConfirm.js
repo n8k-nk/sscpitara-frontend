@@ -14,8 +14,8 @@ export default function ResetConfirm({ uid, token }) {
     {state === "expired" && <Link className="button block" href="/account/reset/">Request another link</Link>}
     {state === "valid" && <SimpleForm endpoint="auth/password-reset/confirm" action="Save new password" extra={{ uid, token }} done={() => setState("updated")}
       fields={[
-        { name: "password1", label: "New password", type: "password", autoComplete: "new-password", required: true, help: "At least 8 characters. Avoid common or all-number passwords." },
-        { name: "password2", label: "New password confirmation", type: "password", autoComplete: "new-password", required: true },
+        { name: "new_password1", label: "New password", type: "password", autoComplete: "new-password", revealPassword: true, required: true, help: "At least 8 characters. Avoid common or all-number passwords." },
+        { name: "new_password2", label: "New password confirmation", type: "password", autoComplete: "new-password", revealPassword: true, required: true },
       ]} />}
   </AuthShell>;
 }

@@ -7,6 +7,16 @@ import { need } from "../../../../lib/server";
 
 export const metadata = { title: "Practice set", robots: { index: false } };
 
+function renderVariant(variant) {
+  return {
+    stem: <Rich inline interactive={false}>{variant.question}</Rich>,
+    passage: variant.passage ? <Rich interactive={false}>{variant.passage}</Rich> : null,
+    options: variant.options.map((option, i) => (
+      <Rich key={i} inline interactive={false}>{option.label}</Rich>
+    )),
+  };
+}
+
 export default async function Attempt({ params, searchParams }) {
   const { id } = await params;
   const { q = "", lang = "" } = await searchParams;
@@ -17,12 +27,26 @@ export default async function Attempt({ params, searchParams }) {
   if (data.data_entry) return <MockFrame id={id} proctored={false}>
     <MockDataEntry key={data.data_entry.deadline ?? "break"} id={id} title={data.title} session={data.data_entry} />
   </MockFrame>;
-  const key = `${data.section}-${data.position}-${data.hi}`;
+
+  const key = `${id}-${data.section}`;
   if (data.pyq || data.rich_text) {
-    const runner = <Runner key={key} data={data}
+    const renderedByPos = {};
+    if (Array.isArray(data.items)) {
+      for (const item of data.items) {
+        renderedByPos[item.position] = {
+          en: renderVariant(item.en),
+          ...(item.hi ? { hi: renderVariant(item.hi) } : {}),
+        };
+      }
+    }
+    const runner = <Runner
+      key={key}
+      data={data}
+      renderedByPos={renderedByPos}
       stem={<Rich inline interactive={false}>{data.question}</Rich>}
       passage={data.passage && <Rich interactive={false}>{data.passage}</Rich>}
-      options={data.options.map((option, i) => <Rich key={i} inline interactive={false}>{option.label}</Rich>)} />
+      options={data.options.map((option, i) => <Rich key={i} inline interactive={false}>{option.label}</Rich>)}
+    />;
     return data.mock ? <MockFrame id={id} proctored={!data.rich_text}>{runner}</MockFrame> : runner;
   }
   return <Runner key={key} data={data} />;

@@ -28,7 +28,8 @@ const NAV_GROUPS = [
       { href: "/signin/", label: "Sign in", guestOnly: true },
       { href: "/signup/", label: "Create account", guestOnly: true },
       { href: "/account/", label: "My account", authOnly: true },
-      { href: "/billing/", label: "Billing", authOnly: true },
+      { href: "/billing/", label: "Billing", premiumOnly: true },
+      { href: "/plans/", label: "Plan", freeOnly: true },
       { href: "/onboarding/", label: "Onboarding", authOnly: true },
       { href: "/support/", label: "Support" },
     ],
@@ -45,7 +46,7 @@ const NAV_GROUPS = [
   },
 ];
 
-export default function SiteFooter({ authenticated }) {
+export default function SiteFooter({ authenticated, premium = false }) {
   return (
     <footer className="site-footer">
       <div className="footer-inner">
@@ -74,8 +75,12 @@ export default function SiteFooter({ authenticated }) {
                 <p className="footer-label">{label}</p>
                 <ul>
                   {links
-                    .filter(({ authOnly, guestOnly }) =>
-                      authOnly ? authenticated : guestOnly ? !authenticated : true
+                    .filter(({ authOnly, guestOnly, premiumOnly, freeOnly }) =>
+                      premiumOnly ? authenticated && premium
+                        : freeOnly ? authenticated && !premium
+                          : authOnly ? authenticated
+                            : guestOnly ? !authenticated
+                              : true
                     )
                     .map(({ href, label: text }) => (
                       <li key={href}>

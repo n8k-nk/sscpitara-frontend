@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "../../../../../../components/NavigationLink";
 import { notFound, redirect } from "next/navigation";
 import GoToPlans from "../../../../../../components/learn/GoToPlans";
 import Companion from "../../../../../../components/learn/Companion";

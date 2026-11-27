@@ -29,20 +29,23 @@ function Insight({ title, children }) {
 }
 
 const STEPS = [
-  { short: "Education", title: "What’s your education?", hint: "Pick the highest level you’ve completed." },
+  { short: "About you", title: "Tell us about you", hint: "Enter your name and the highest education level you’ve completed." },
   { short: "Age", title: "How old are you?", hint: "Exams have age limits. We only use this to check them." },
   { short: "Preparation", title: "How are you preparing?", hint: "This sets your daily study plan." },
   { short: "Pick exam", title: "Which exam interests you?", hint: "Choose one exam. You can change it later in your profile, or skip this step for suggestions." },
   { short: "Your exams", title: "What you get if you clear", hint: "The post you can land, your starting salary, what the job lets you do, and what each stage unlocks." },
 ];
 // Which step each server-validated field lives on, so errors can send you back to it.
-const HOME = { education: 0, age: 1, age_relaxation: 1, experience: 2, daily_minutes: 2, target_exams: 3, language: 3 };
-const EDIT_TITLES = ["Edit education", "Edit age and relaxation", "Edit study preferences", "Edit exams and language", "Edit profile details and results"];
+const HOME = { display_name: 0, education: 0, age: 1, age_relaxation: 1, experience: 2, daily_minutes: 2, target_exams: 3, language: 3 };
+const EDIT_TITLES = ["Edit name and education", "Edit age and relaxation", "Edit study preferences", "Edit exams and language", "Edit profile details and results"];
 const stepOf = (name) => HOME[name] ?? 4;
 
 function check(step, v) {
   const e = {};
-  if (step === 0 && !v.education) e.education = ["Choose your highest completed education."];
+  if (step === 0) {
+    if (!String(v.display_name ?? "").trim()) e.display_name = ["Enter your name."];
+    if (!v.education) e.education = ["Choose your highest completed education."];
+  }
   if (step === 1) {
     if (!/^\d+$/.test(v.age) || Number(v.age) > 125) e.age = ["Enter your age in whole years."];
     if (!v.age_relaxation) e.age_relaxation = ["Choose the option that fits you best."];
@@ -131,6 +134,7 @@ export default function Onboarding({ initial, options, exists, editStep = -1 }) 
           <Errors list={errors.__all__} className="errorlist nonfield" />
 
           {step === 0 && <>
+            <Field {...common("display_name")} label="Your name" placeholder="e.g. Raj" autoComplete="name" maxLength={80} required />
             <Tiles {...common("education")} label="Highest completed education" list options={options.education} />
             {rows.length > 0 && <Insight title={`This opens ${rows.filter((r) => r.status !== "education").length} of ${rows.length} SSC exams`}>
               <p>{label(options.education, values.education)} meets the education requirement for these exams.
@@ -177,7 +181,6 @@ export default function Onboarding({ initial, options, exists, editStep = -1 }) 
             <details className="panel" open={editing || Object.keys(errors).some((n) => stepOf(n) === 4) || undefined}>
               <summary>{editing ? "Profile details and previous results" : "Add more detail (optional)"}</summary>
               <div className="panel-body">
-                <Field {...common("display_name")} label="Display name" />
                 <Field {...common("qualification_notes")} label="Relevant qualifications or skills" optional maxLength={200}
                   help="For example an engineering branch or stenography. Leave out certificate numbers." />
                 {options.specialist.map((q) => <Select key={q.name} {...common(q.name)} label={q.question} placeholder="Unsure / skip" options={YES_NO} />)}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
-import { send } from "../lib/client";
+import { send, updateCredits } from "../lib/client";
 import Rich from "./Rich";
 
 export default function QuestionTutor({ mode, question, attempt, position, anon = false, onRequireAuth }) {
@@ -21,8 +21,13 @@ export default function QuestionTutor({ mode, question, attempt, position, anon 
     }
 
     setState({ busy: true });
+    updateCredits({ delta: -1 });
     const { ok, data } = await send("study/question-tutor", { mode, question, attempt, position });
-    if (ok) setExpanded(true);
+    if (ok) {
+      setExpanded(true);
+    } else {
+      updateCredits(typeof data?.credits === "number" ? { credits: data.credits } : { delta: 1 });
+    }
     setState(ok ? { text: data.text } : { error: data.error ?? "The tutor is temporarily unavailable." });
   }
 

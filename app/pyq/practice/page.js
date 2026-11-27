@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "../../../components/NavigationLink";
 import { redirect } from "next/navigation";
 import { getQuestions, pageOf } from "../../../lib/pyq";
 import { QuestionFeed, query, withQuery } from "../_ui";

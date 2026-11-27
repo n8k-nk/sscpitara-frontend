@@ -3714,6 +3714,58 @@
   background: var(--lp-ok);
   flex: none;
 }
+.offerBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem 1.5rem;
+  margin-block: 1.25rem .5rem;
+  padding: 1.1rem 1.4rem;
+  border: 1px solid var(--lp-accent-line);
+  border-radius: 1rem;
+  background: linear-gradient(135deg, var(--lp-accent-soft) 0%, var(--lp-surface) 70%);
+  color: var(--lp-text);
+}
+.offerCopy {
+  display: grid;
+  gap: .3rem;
+  min-width: 0;
+}
+.offerBadge {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: .18rem .6rem;
+  border: 1px solid var(--lp-ok-line);
+  border-radius: 999px;
+  background: var(--lp-ok-soft);
+  color: var(--lp-ok);
+  font-size: .75rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.offerTitle {
+  color: var(--lp-ink);
+  font-size: clamp(1.02rem, 1.8vw, 1.2rem);
+  font-weight: 600;
+  line-height: 1.35;
+}
+.offerOld {
+  color: var(--lp-muted);
+  font-weight: 500;
+  margin-inline: .15rem;
+}
+.offerFree {
+  color: var(--lp-ok);
+  font-weight: 800;
+}
+.offerSub {
+  color: var(--lp-muted);
+  font-size: .9rem;
+  line-height: 1.45;
+}
 .productPreview {
   min-width: 0;
   border: 1px solid var(--lp-line-strong);

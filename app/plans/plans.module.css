@@ -73,6 +73,14 @@
   font-variant-numeric: tabular-nums;
 }
 
+.oldPrice {
+  font-size: 1.15rem;
+  color: var(--muted);
+  text-decoration: line-through;
+  font-variant-numeric: tabular-nums;
+  margin-right: .15rem;
+}
+
 .priceRow span {
   color: var(--muted);
   font-size: .95rem;

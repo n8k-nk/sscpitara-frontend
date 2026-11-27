@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "../../components/NavigationLink";
 import { useState } from "react";
 import { amount, dateLabel } from "./format";
 import styles from "./analytics.module.css";

@@ -11,7 +11,6 @@ export default {
   async redirects() {
     return [
       { source: "/arena/:path*", destination: "/games/:path*", permanent: true },
-      { source: "/billing/", destination: "/plans/", permanent: false },
     ];
   },
   async rewrites() {

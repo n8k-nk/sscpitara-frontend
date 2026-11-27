@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { send } from "../../lib/client";
+import { send, updateCredits } from "../../lib/client";
 import { TutorMessagesList } from "./TutorMessage";
 import TutorBackdrop from "./TutorBackdrop";
 import VoiceWaveform from "./VoiceWaveform";
@@ -653,6 +653,7 @@ export default function TutorChat({ initialThread = null, userName }) {
       { id: aiMsgId, role: "assistant", content: "", streaming: true },
     ]);
     setLoading(true);
+    updateCredits({ delta: -1 });
 
     const controller = new AbortController();
     abortRef.current = controller;
@@ -678,6 +679,7 @@ export default function TutorChat({ initialThread = null, userName }) {
 
       if (!res.ok || !res.body) {
         const errData = await res.json().catch(() => ({}));
+        updateCredits(typeof errData?.credits === "number" ? { credits: errData.credits } : { delta: 1 });
         const msgErr = res.status === 429
           ? "Rate limit reached for this hour. Try again later."
           : errData.error || "Something went wrong. Please try again.";

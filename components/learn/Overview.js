@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "../NavigationLink";
 import TopicSearch from "./TopicSearch";
 import { minutes, shiftChance } from "./bits";
 import { scopedAnalytics } from "../../lib/study-scope-paths";
@@ -14,11 +14,25 @@ function Progress({ done, started, total, label, words }) {
   </div>;
 }
 
+export function LearnHeading({ exam, stage, title, intro, children }) {
+  return <div className="learn-head">
+    <div><span className="eyebrow">SSC {exam} · {stage}</span><h1>{title}</h1>{intro && <p className="muted">{intro}</p>}</div>
+    {children}
+  </div>;
+}
+
+export function StudyPlanLink({ scope }) {
+  if (!scope.signedIn) return null;
+  return <Link className="plan-cta" href={scopedAnalytics(scope)}>
+    <span><strong>Study plan</strong><small>See your next steps in Analytics</small></span><span aria-hidden="true">→</span>
+  </Link>;
+}
+
 /**
  * The Learn overview of every exam and stage: this learner's progress, search and subject cards.
  * `d.kind` is "lessons" (counts skills) or "questions" (no lessons yet, so counts topics practised).
  */
-export default function Overview({ d, here, title, intro, children }) {
+export default function Overview({ d, here, title, intro, children, showHeading = true }) {
   const lessons = d.kind === "lessons";
   const unit = lessons ? "skills" : "topics";
   const words = lessons ? { done: "done", started: "in progress" } : { done: "practised", started: "started" };
@@ -26,10 +40,9 @@ export default function Overview({ d, here, title, intro, children }) {
   const sum = (key) => core.reduce((n, s) => n + s[key], 0);
   const total = sum("skills"), done = d.signedIn ? sum("covered") : 0, started = d.signedIn ? sum("inProgress") : 0;
   return <div className="learn-overview">
-    <div className="learn-head">
-      <div><span className="eyebrow">SSC {d.exam} · {d.stage}</span><h1>{title}</h1>{intro && <p className="muted">{intro}</p>}</div>
-      {d.signedIn && <Link className="plan-cta" href={scopedAnalytics(d)}><span><strong>Study plan</strong><small>See your next steps in Analytics</small></span><span aria-hidden="true">→</span></Link>}
-    </div>
+    {showHeading && <LearnHeading exam={d.exam} stage={d.stage} title={title} intro={intro}>
+      <StudyPlanLink scope={d} />
+    </LearnHeading>}
 
     {lessons && (d.resume || d.start || d.reviewDue !== undefined) && <div className="learn-next">
       {(d.resume || d.start) && <Link className="next-card primary" href={(d.resume || d.start).href}>

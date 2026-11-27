@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
+import Link from "../../../components/NavigationLink";
 import { useRouter } from "next/navigation";
 import { send } from "../../../lib/client";
 import styles from "./mocks.module.css";

@@ -40,8 +40,6 @@ export default function DigestStudy({ date, lang, quote, items, archive, account
   const currentSheet = useRef(null);
   const motion = useRef(null);
   const gesture = useRef(null);
-  const pending = useRef(false);
-  const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
   function setFlag(field, position, enabled) {
@@ -51,32 +49,26 @@ export default function DigestStudy({ date, lang, quote, items, archive, account
     save({ ...current, [date]: { ...day, [field]: enabled ? [...other, position] : other } });
   }
 
-  async function changeRead(item, enabled) {
+  function changeRead(item, enabled) {
     if (readIds === null) {
       setFlag("learned", item.position, enabled);
-      return true;
+      return;
     }
-    pending.current = true;
-    setSaving(true);
     setError("");
-    const result = await send("current-affairs/reading", { item: item.id, read: enabled }, "POST", { keepalive: true });
-    pending.current = false;
-    setSaving(false);
-    if (!result.ok) {
-      setError(result.data.error ?? "Could not save your reading progress.");
-      return false;
-    }
     setReadIds(ids => enabled ? [...new Set([...ids, item.id])] : ids.filter(id => id !== item.id));
-    return true;
+    send("current-affairs/reading", { item: item.id, read: enabled }, "POST", { keepalive: true })
+      .then((result) => {
+        if (!result.ok) {
+          setReadIds(ids => enabled ? ids.filter(id => id !== item.id) : [...new Set([...ids, item.id])]);
+          setError(result.data.error ?? "Could not save your reading progress.");
+        }
+      });
   }
 
-  async function advance() {
+  function advance() {
     if (!card) return;
     if (!alreadyRead) {
-      if (!await changeRead(card, true)) {
-        if (currentSheet.current) currentSheet.current.style.transform = "";
-        return;
-      }
+      changeRead(card, true);
       setLastRead(card.position);
     }
     setCursor(index + 1);
@@ -116,7 +108,7 @@ export default function DigestStudy({ date, lang, quote, items, archive, account
   }
 
   function navigate(step) {
-    if (!pending.current && !motion.current && !gesture.current) settle(currentSheet.current, 0, step);
+    if (!motion.current && !gesture.current) settle(currentSheet.current, 0, step);
   }
 
   function startDrag(event) {
@@ -200,14 +192,14 @@ export default function DigestStudy({ date, lang, quote, items, archive, account
         </div>
         <div className={styles.controls}>
           <span>{read.length} of {items.length} read</span>
-          {lastRead !== null && learned.includes(lastRead) && <button type="button" disabled={saving} onClick={async () => {
+          {lastRead !== null && learned.includes(lastRead) && <button type="button" onClick={() => {
             const undo = items.findIndex(item => item.position === lastRead);
-            if (!await changeRead(items[undo], false)) return;
+            changeRead(items[undo], false);
             setCursor(undo);
             setLastRead(null);
           }}>Undo</button>}
-          {index > 0 && <button type="button" disabled={saving} onClick={() => navigate(-1)}><span aria-hidden="true">←</span> Previous</button>}
-          {card && <button className={styles.primary} type="button" disabled={saving} onClick={() => navigate(1)}>{saving ? "Saving…" : alreadyRead ? "Next" : "Mark as read"} <span aria-hidden="true">→</span></button>}
+          {index > 0 && <button type="button" onClick={() => navigate(-1)}><span aria-hidden="true">←</span> Previous</button>}
+          {card && <button className={styles.primary} type="button" onClick={() => navigate(1)}>{alreadyRead ? "Next" : "Mark as read"} <span aria-hidden="true">→</span></button>}
         </div>
         {error && <p role="alert">{error}</p>}
         {items.length > 0 && <progress className={styles.progress} aria-label="Digest read" value={read.length} max={items.length} />}

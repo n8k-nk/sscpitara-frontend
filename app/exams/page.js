@@ -1,13 +1,23 @@
+import { Suspense } from "react";
+import RouteSkeleton from "../../components/RouteSkeleton";
 import Link from "next/link";
 import { metadata as pageMetadata, readExams } from "../../lib/public";
 
 export const metadata = pageMetadata("SSC exam directory", "Browse SSC exam families and official references.", "/exams/");
 
-export default async function Directory() {
-  const exams = await readExams();
+export default function Directory() {
   return <>
     <div className="page-head"><span className="eyebrow">Directory</span><h1>SSC exam directory</h1>
       <p>Browse SSC exam families and open the official references.</p></div>
+    <Suspense fallback={<RouteSkeleton label="exam directory" variant="overview" inline />}>
+      <ExamGroups />
+    </Suspense>
+  </>;
+}
+
+async function ExamGroups() {
+  const exams = await readExams();
+  return <>
     {[...new Set(exams.map((exam) => exam.category))].map((category) =>
       <section key={category}><div className="section-head"><h2>{category}</h2></div>
         <div className="grid">{exams.filter((exam) => exam.category === category).map((exam) =>

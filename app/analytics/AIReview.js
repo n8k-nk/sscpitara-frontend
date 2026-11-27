@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
+import Link from "../../components/NavigationLink";
 import { useState } from "react";
-import { send } from "../../lib/client";
+import { send, updateCredits } from "../../lib/client";
 import styles from "./analytics.module.css";
 
 function Topics({ title, tone, rows }) {
@@ -19,10 +19,14 @@ export default function AIReview({ exam, stage }) {
   async function generate() {
     setPending(true);
     setError("");
+    updateCredits({ delta: -1 });
     const response = await send("study/analytics/review", { exam, stage, consent: true });
     setPending(false);
     if (response.ok) setReview(response.data);
-    else setError(response.data.error ?? "Could not generate a review. Try again.");
+    else {
+      updateCredits(typeof response.data?.credits === "number" ? { credits: response.data.credits } : { delta: 1 });
+      setError(response.data.error ?? "Could not generate a review. Try again.");
+    }
   }
 
   const basis = review?.basis;

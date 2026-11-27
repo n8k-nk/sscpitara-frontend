@@ -1,6 +1,8 @@
+import { cache, Suspense } from "react";
+import RouteSkeleton from "../../components/RouteSkeleton";
 import { gameById } from "../games/catalog";
 import Image from "next/image";
-import Link from "next/link";
+import Link from "../../components/NavigationLink";
 import planner from "../../public/images/landing-planner.webp";
 import { ActivityChart, MockChart } from "./Charts";
 import AIReview from "./AIReview";
@@ -67,17 +69,32 @@ function GameResult({ game }) {
   </section>;
 }
 
-export default async function Analytics({ searchParams }) {
-  const d = await loadAnalytics(searchParams);
+const analyticsData = cache(loadAnalytics);
+
+export default function Analytics({ searchParams }) {
+  return <div className={styles.page}>
+    <header className={styles.titleBar}>
+      <div><h1>Analytics</h1><p>Your study activity, marks and next steps.</p></div>
+      <Suspense fallback={null}><AnalyticsScope searchParams={searchParams} /></Suspense>
+    </header>
+    <Suspense fallback={<RouteSkeleton label="study activity" variant="overview" inline />}>
+      <AnalyticsData searchParams={searchParams} />
+    </Suspense>
+  </div>;
+}
+
+async function AnalyticsScope({ searchParams }) {
+  const d = await analyticsData(searchParams);
+  return <span className={styles.scope}>{d.exam} · {d.stage}</span>;
+}
+
+async function AnalyticsData({ searchParams }) {
+  const d = await analyticsData(searchParams);
   const core = d.exam === "CGL" && d.stage === "Tier I";
   const practiceHref = `/pyq/${d.exam_slug}/topics/?${new URLSearchParams({ stage: d.stage })}`;
   const mockHref = d.exam === "CGL" ? `/study/practice/?tier=${d.stage === "Tier II" ? 2 : 1}` : `/pyq/${d.exam_slug}/`;
   const historyHref = analyticsUrl("activity", d.exam, d.stage);
-  return <div className={styles.page}>
-    <header className={styles.titleBar}>
-      <div><h1>Analytics</h1><p>Your study activity, marks and next steps.</p></div>
-      <span className={styles.scope}>{d.exam} · {d.stage}</span>
-    </header>
+  return <>
     <Resume items={d.active} practiceHref={practiceHref} />
     <PlanPreview days={d.plan_days} href={analyticsUrl("plan", d.exam, d.stage)} />
     {d.ai_review_available && <AIReview key={`review-${practiceHref}`} exam={d.exam} stage={d.stage} />}
@@ -85,5 +102,5 @@ export default async function Analytics({ searchParams }) {
       actionLinks={{ answers: practiceHref, facts: "/current-affairs/" }} />
     <MockChart key={`mock-${practiceHref}`} mocks={d.mocks} startHref={mockHref} />
     {core && <GameResult game={d.activities.games[0]} />}
-  </div>;
+  </>;
 }

@@ -1,12 +1,18 @@
-import Link from "next/link";
+import { cache } from "react";
+import Link from "../../../../components/NavigationLink";
 import { notFound } from "next/navigation";
 import OpenTopic from "../../../../components/learn/OpenTopic";
 import { STATE, chanceByYear, lessonDate, minutes, shiftChance } from "../../../../components/learn/bits";
 import { call } from "../../../../lib/server";
 
-export async function generateMetadata({ params }) {
+const loadSubject = cache(async (subject, stageQuery) =>
+  call(`learn/cgl/${subject}`, stageQuery)
+);
+
+export async function generateMetadata({ params, searchParams }) {
   const { subject } = await params;
-  const { ok, data } = await call(`learn/cgl/${subject}`);
+  const query = await searchParams;
+  const { ok, data } = await loadSubject(subject, query.from === "tier-ii" ? "stage=Tier+II" : "");
   const stage = data?.subject?.stage === "Tier II" ? "Tier II" : "Tier I";
   return ok ? { title: `${data.subject.title}: SSC CGL ${stage} skills`, alternates: { canonical: `/learn/cgl/${subject}/` } } : { title: "Learn" };
 }
@@ -16,8 +22,9 @@ const byFrequency = (a, b) => b.probability - a.probability || b.perShift - a.pe
 export default async function Subject({ params, searchParams }) {
   const { subject } = await params;
   const query = await searchParams;
-  const { status, data: d } = await call(`learn/cgl/${subject}`, query.from === "tier-ii" ? "stage=Tier+II" : "");
+  const { ok, status, data: d } = await loadSubject(subject, query.from === "tier-ii" ? "stage=Tier+II" : "");
   if (status === 404) notFound();
+  if (!ok || !d?.subject) throw new Error("Could not load this subject. Please refresh.");
   const tierTwo = d.subject.stage === "Tier II" || query.from === "tier-ii";
   const skillQuery = tierTwo ? "?from=tier-ii" : "";
   const topics = d.topics.map((t) => ({ ...t, skills: [...t.skills] }));

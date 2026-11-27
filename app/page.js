@@ -97,7 +97,7 @@ export default async function Home() {
           <p className={css.productLead}>Learn each topic, practise with real exam questions, and revise on schedule. Ask AI Tutor for a hint when you get stuck.</p>
           <div className={css.productActions}>
             <Link href="/signup/" className={css.primaryCta}>Start learning for free</Link>
-            <Link href="/plans/" className={css.heroSecondaryLink}>Explore Premium <Arrow /></Link>
+            <Link href="/plans/" className={css.heroSecondaryLink}>Get Premium Free <Arrow /></Link>
           </div>
           <p className={css.heroProof}>
             <span className={css.heroProofDot} aria-hidden="true" />
@@ -105,6 +105,18 @@ export default async function Home() {
           </p>
         </div>
         <HeroAnimation />
+      </section>
+      <section className={css.wrap} aria-label="Free Premium winter offer">
+        <div className={css.offerBar}>
+          <div className={css.offerCopy}>
+            <span className={css.offerBadge}>Winter Offer</span>
+            <p className={css.offerTitle}>
+              1-Year Premium + <strong>2,000 AI Credits</strong> — <del className={css.offerOld}>₹199</del> <strong className={css.offerFree}>₹0</strong>
+            </p>
+            <p className={css.offerSub}>Unlock all PYQ shifts, full mocks, worked solutions, and Tier I &amp; II lessons free.</p>
+          </div>
+          <Link href="/plans/" className={css.primaryCta}>Claim Free Premium <Arrow /></Link>
+        </div>
       </section>
       <section id="testimonials" className={css.section} aria-labelledby="testimonials-title">
         <div className={css.wrap}>

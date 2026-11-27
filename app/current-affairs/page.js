@@ -1,4 +1,6 @@
-import Link from "next/link";
+import { Suspense } from "react";
+import RouteSkeleton from "../../components/RouteSkeleton";
+import Link from "../../components/NavigationLink";
 import { notFound } from "next/navigation";
 import { metadata as pageMetadata, readCurrentAffairs } from "../../lib/public";
 import { call } from "../../lib/server";
@@ -17,12 +19,22 @@ const formatDate = (iso, options) => new Date(`${iso}T00:00:00+05:30`).toLocaleD
 
 export default async function CurrentAffairs({ searchParams }) {
   const { date, lang: wanted } = await searchParams;
-  const data = await readCurrentAffairs(typeof date === "string" ? date : undefined);
-  if (!data) notFound();
   const lang = wanted === "hi" ? "hi" : "en";
+  const digestDate = typeof date === "string" ? date : undefined;
+
+  return <div className={styles.page}>
+    <header className={styles.intro}><h1>Daily Current Affairs</h1></header>
+    <Suspense key={`${digestDate ?? "latest"}/${lang}`} fallback={<RouteSkeleton label="current affairs digest" variant="reading" inline />}>
+      <DigestContent date={digestDate} lang={lang} />
+    </Suspense>
+  </div>;
+}
+
+async function DigestContent({ date, lang }) {
+  const data = await readCurrentAffairs(date);
+  if (!data) notFound();
   const textField = lang === "hi" ? "hindi" : "english";
   const { days, digest } = data;
-  const reading = digest ? await call("current-affairs/reading", new URLSearchParams({ date: digest.date })) : null;
   const latest = days[0]?.date;
   const recent = days.slice(0, RECENT_DAYS);
   const selected = days.find((day) => day.date === digest?.date);
@@ -48,10 +60,9 @@ export default async function CurrentAffairs({ searchParams }) {
   );
   const items = digest?.items?.filter((item) => item[textField]) ?? [];
 
-  return <div className={styles.page}>
-    <header className={styles.intro}>
+  return <>
+    <div className={styles.intro}>
       <div>
-        <h1>Daily Current Affairs</h1>
         {digest ? <p><time dateTime={digest.date}>{long(digest.date)}</time></p>
           : <p>Key news for SSC exams in Hindi and English.</p>}
       </div>
@@ -59,10 +70,9 @@ export default async function CurrentAffairs({ searchParams }) {
         {LANGS.map(([key, label]) => <Link key={key} href={href(digest.date, key)} lang={key}
           aria-current={key === lang ? "page" : undefined}>{label}</Link>)}
       </nav>}
-    </header>
-    {!digest ? <p className="empty">No digests yet. Check back shortly.</p> : <DigestStudy key={`${digest.date}-${lang}`} date={digest.date}
+    </div>
+    {!digest ? <p className="empty">No digests yet. Check back shortly.</p> : <Suspense fallback={<RouteSkeleton label="digest reader" variant="reading" inline />}><DigestReader key={`${digest.date}-${lang}`} date={digest.date}
       lang={lang} quote={digest.quote} items={items.map((item) => ({ id: item.id, position: item.position, text: item[textField] }))}
-      accountReads={reading?.ok ? reading.data.read : null}
       archive={
       <nav className={styles.archive} aria-label="Digest dates">
         <h2>
@@ -75,6 +85,11 @@ export default async function CurrentAffairs({ searchParams }) {
           <div className={styles.dates}>{older.map(dateLink)}</div>
         </details>}
       </nav>
-      } />}
-  </div>;
+      } /></Suspense>}
+  </>;
+}
+
+async function DigestReader({ date, ...props }) {
+  const reading = await call("current-affairs/reading", new URLSearchParams({ date }));
+  return <DigestStudy {...props} date={date} accountReads={reading.ok ? reading.data.read : null} />;
 }

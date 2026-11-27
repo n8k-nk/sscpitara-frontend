@@ -1,5 +1,5 @@
-import OverviewSkeleton from "../../../../components/learn/OverviewSkeleton";
+import RouteSkeleton from "../../../../components/RouteSkeleton";
 
 export default function Loading() {
-  return <OverviewSkeleton subjects={7} resources={false} />;
+  return <RouteSkeleton label="Learn" />;
 }

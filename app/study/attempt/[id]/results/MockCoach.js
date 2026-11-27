@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { send } from "../../../../../lib/client";
+import { send, updateCredits } from "../../../../../lib/client";
 import styles from "./report.module.css";
 
 export default function MockCoach({ attempt }) {
@@ -9,7 +9,11 @@ export default function MockCoach({ attempt }) {
 
   async function generate() {
     setState({ busy: true });
+    updateCredits({ delta: -1 });
     const { ok, data } = await send(`study/attempts/${attempt}/coach`);
+    if (!ok) {
+      updateCredits(typeof data?.credits === "number" ? { credits: data.credits } : { delta: 1 });
+    }
     setState(ok ? { text: data.text } : { error: data.error || "AI coaching is temporarily unavailable." });
   }
 

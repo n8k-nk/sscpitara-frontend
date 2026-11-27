@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "../../../components/NavigationLink";
 import { analyticsUrl, loadAnalytics } from "../data";
 import { dateLabel } from "../format";
 import styles from "../analytics.module.css";

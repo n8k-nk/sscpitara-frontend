@@ -1,11 +1,11 @@
-export default function OverviewSkeleton({ subjects = 4, resources = true }) {
+export default function OverviewSkeleton({ subjects = 4, resources = true, showHeading = true }) {
   return <div className="learn-overview learn-placeholder">
     <span className="sr-only" role="status">Loading Learn…</span>
     <div aria-hidden="true">
-      <div className="learn-head">
+      {showHeading && <div className="learn-head">
         <div><span className="skeleton-line" /><span className="skeleton-title" style={{ width: "9rem", marginBottom: 0 }} /></div>
         <div className="plan-cta"><span className="skeleton-line" style={{ width: "12rem" }} /></div>
-      </div>
+      </div>}
       <div className="learn-next">
         {[0, 1].map((card) => <div className={card === 0 ? "next-card primary" : "next-card"} key={card}>
           <span className="skeleton-line" /><span className="skeleton-line" /><span className="skeleton-line" />

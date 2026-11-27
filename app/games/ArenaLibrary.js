@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "../../components/NavigationLink";
 import { useState } from "react";
 import { games, gamesFor, gameHref, arenaQuery } from "./catalog";
 import styles from "./arena.module.css";
@@ -24,11 +24,6 @@ export default function ArenaLibrary({ options, selected, initialExam, initialSt
   }
 
   return <>
-    <header className={styles.libraryHeader}>
-      <h1 id="arena-title">Games</h1>
-      <p>Quick practice games for SSC exams.</p>
-    </header>
-
     <section id="arena-games" className={styles.shelf} aria-labelledby="arena-title">
       <div className={styles.shelfHead}>
         <div className={styles.subjects} role="group" aria-label="Filter by subject">

@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
-import { send } from "../../lib/client";
+import { send, updateCredits } from "../../lib/client";
 import Rich from "../Rich";
 
 export default function LessonAsk({ path, version }) {
@@ -14,7 +14,11 @@ export default function LessonAsk({ path, version }) {
     if (!prompt || result.busy) return;
     setQuestion(prompt);
     setResult({ busy: true });
+    updateCredits({ delta: -1 });
     const { ok, data } = await send(`learn/companion/${path}/ask`, { question: prompt, version });
+    if (!ok) {
+      updateCredits(typeof data?.credits === "number" ? { credits: data.credits } : { delta: 1 });
+    }
     setResult(ok ? { text: data.text } : { error: data.error || "The tutor is temporarily unavailable." });
   }
 

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "../../../components/NavigationLink";
 import PyqMockStart from "../../../components/PyqMockStart";
 import { getOverview, papersOf } from "../../../lib/pyq";
 import AutoFilters from "./AutoFilters";

@@ -1,4 +1,6 @@
+import { Suspense } from "react";
 import Link from "next/link";
+import ClaimPremium from "../../components/ClaimPremium";
 import Pay from "../../components/Pay";
 import SiteFooter from "../../components/SiteFooter";
 import HomeHeader from "../_home/HomeHeader";
@@ -8,7 +10,7 @@ import styles from "./plans.module.css";
 
 export const metadata = pageMetadata(
   "Free and Premium",
-  "Compare Free and Premium (₹199/year with 200 AI credits) plus ₹100 AI credit top-ups on SSC Pitara.",
+  "Winter offer: get Premium for ₹0 (was ₹199/year) with 2,000 AI credits, plus ₹100 top-ups for +150 AI credits on SSC Pitara.",
   "/plans/",
 );
 
@@ -60,16 +62,16 @@ const COMPARISON = [
   },
   {
     feature: "AI Credits",
-    hint: "Starter balance vs 1-year Premium add-on",
+    hint: "Starter balance vs winter-offer Premium add-on",
     free: "5 starter credits",
-    premium: "200 AI credits included",
+    premium: "2,000 AI credits included",
     premiumStrong: true,
   },
   {
     feature: "AI Study Tools",
     hint: "AI Tutor Chat, PYQ Ask AI, Analytics AI Review & Lesson Ask AI",
     free: "1 credit / request (up to 5)",
-    premium: "1 credit / request (200 included)",
+    premium: "1 credit / request (2,000 included)",
   },
   {
     feature: "AI Credit Top-up",
@@ -101,38 +103,55 @@ const COMPARISON = [
   },
 ];
 
-function PlanContent({ preview, billing }) {
-  const price = money(199);
+async function PurchaseAction({ signedIn, topup = false, billingData }) {
+  const offerPrice = money(0);
   const topupPrice = money(100);
-  const freeLessons = preview.length
-    ? preview.map((lesson) => `${lesson.title} (${lesson.subject})`).join(", ")
-    : "the first two lessons in study order";
+  const billing = signedIn ? (await billingData)?.data : null;
 
   const buy = billing?.premium ? (
-    <span className="badge ok">Premium active on this account</span>
-  ) : billing?.enabled && billing?.available && billing?.authenticated ? (
-    <Pay price={price} kind="premium" label={`Get Premium · ${price} / yr`} />
-  ) : billing?.authenticated ? (
-    <Link className="button" href="/billing/">
-      Go to Billing ({price} / year)
-    </Link>
+    <div style={{ display: "flex", flexWrap: "wrap", gap: ".5rem", alignItems: "center" }}>
+      <span className="badge ok">Premium active on this account</span>
+      <Link className="button secondary" href="/billing/">
+        Manage billing
+      </Link>
+    </div>
+  ) : signedIn ? (
+    <ClaimPremium label={`Get Premium · ${offerPrice}`} />
   ) : (
     <Link className="button" href="/signin/?next=/plans/">
-      Sign in to get Premium
+      Sign in to get Premium ({offerPrice})
     </Link>
   );
 
   const buyTopup = billing?.enabled && billing?.available && billing?.authenticated ? (
     <Pay price={topupPrice} kind="topup" label={`Buy +150 AI Credits · ${topupPrice}`} />
-  ) : billing?.authenticated ? (
+  ) : signedIn && billing?.premium ? (
     <Link className="button secondary" href="/billing/">
-      Go to Billing ({topupPrice})
+      Billing ({topupPrice})
     </Link>
+  ) : signedIn ? (
+    <p className="muted">A top-up of {topupPrice} for +150 credits is available when checkout is on.</p>
   ) : (
     <Link className="button secondary" href="/signin/?next=/plans/">
       Sign in to top up
     </Link>
   );
+
+  return topup ? buyTopup : buy;
+}
+
+async function FreeLessons() {
+  const learn = await call("learn/cgl", "summary=1").catch(() => null);
+  const preview = learn?.data?.preview ?? [];
+  return preview.length
+    ? preview.map((lesson) => `${lesson.title} (${lesson.subject})`).join(", ")
+    : "the first two lessons in study order";
+}
+
+function PlanContent({ signedIn }) {
+  const price = money(199);
+  const topupPrice = money(100);
+  const billingData = signedIn ? call("billing/plan").catch(() => null) : null;
 
   return (
     <div className={styles.plansWrap}>
@@ -147,7 +166,7 @@ function PlanContent({ preview, billing }) {
             <span>forever</span>
           </p>
           <p className={styles.cardDesc}>
-            Start preparing right away with {freeLessons}, 6 PYQ papers per year, and 5 free AI credits.
+            Start preparing right away with <Suspense fallback="the first two lessons in study order"><FreeLessons /></Suspense>, 6 PYQ papers per year, and 5 free AI credits.
           </p>
           <ul className={styles.highlights}>
             <li>5 free AI credits across AI Tutor, PYQ Ask AI &amp; Analytics</li>
@@ -164,23 +183,26 @@ function PlanContent({ preview, billing }) {
 
         <article className={`${styles.card} ${styles.cardFeatured}`}>
           <div className={styles.cardTop}>
-            <span className="eyebrow">Premium</span>
-            <span className="badge ok">200 AI Credits</span>
+            <span className="eyebrow">Premium · Winter Offer</span>
+            <span className="badge ok">2,000 AI Credits</span>
           </div>
           <p className={styles.priceRow}>
-            <strong>{price}</strong>
+            <del className={styles.oldPrice} aria-label="Original price ₹199">{price}</del>
+            <strong>{money(0)}</strong>
             <span>/ 1 year</span>
           </p>
           <p className={styles.cardDesc}>
-            Unlock worked solutions, all PYQ shifts, every mock test &amp; lesson, plus 200 AI credits for 1 year.
+            Unlock worked solutions, all PYQ shifts, every mock test &amp; lesson, plus 2,000 AI credits for 1 year — free with our Winter Offer.
           </p>
           <ul className={styles.highlights}>
             <li>Worked explanations &amp; shortcuts for every question</li>
             <li>All 53+ PYQ papers per year, PYQ mocks &amp; sectional builder</li>
             <li>All 200+ full mocks + every Tier I &amp; Tier II lesson</li>
-            <li>200 AI credits add-on included</li>
+            <li>2,000 AI credits included (worth {topupPrice}+)</li>
           </ul>
-          <div className={styles.cardCta}>{buy}</div>
+          <div className={styles.cardCta}><Suspense fallback={<span className="skeleton-line" role="status" aria-label="Loading Premium options" />}>
+            <PurchaseAction signedIn={signedIn} billingData={billingData} />
+          </Suspense></div>
         </article>
       </div>
 
@@ -190,7 +212,9 @@ function PlanContent({ preview, billing }) {
           <h2 id="topup-heading">AI Credits Top-up — +150 AI Credits for {topupPrice}</h2>
           <p>Available anytime for both Free and Premium accounts. Credits never expire and stack on your existing balance.</p>
         </div>
-        <div className={styles.topupAction}>{buyTopup}</div>
+        <div className={styles.topupAction}><Suspense fallback={<span className="skeleton-line" role="status" aria-label="Loading top-up options" />}>
+          <PurchaseAction signedIn={signedIn} billingData={billingData} topup />
+        </Suspense></div>
       </section>
 
       <section className={styles.tableSection} aria-labelledby="compare-heading">
@@ -202,7 +226,7 @@ function PlanContent({ preview, billing }) {
               <tr>
                 <th scope="col">Feature</th>
                 <th scope="col">Free ({money(0)})</th>
-                <th scope="col">Premium ({price}/yr)</th>
+                <th scope="col">Premium (<del>{price}</del> {money(0)}/yr)</th>
               </tr>
             </thead>
             <tbody>
@@ -229,13 +253,7 @@ function PlanContent({ preview, billing }) {
 }
 
 export default async function Plans() {
-  const [user, learn, billing] = await Promise.all([
-    session(),
-    call("learn/cgl").catch(() => ({ data: null })),
-    call("billing/plan").catch(() => ({ data: null })),
-  ]);
-  const preview = learn.data?.preview ?? [];
-  const signedIn = Boolean(user.authenticated);
+  const signedIn = Boolean((await session()).authenticated);
 
   if (!signedIn) {
     return (
@@ -249,7 +267,7 @@ export default async function Plans() {
               <p>Start free with 5 AI credits and 6 PYQ papers per year, or unlock everything + 200 AI credits for {money(199)} / year.</p>
             </div>
           </div>
-          <PlanContent preview={preview} billing={billing.data} />
+          <PlanContent signedIn={signedIn} />
         </main>
         <SiteFooter authenticated={false} />
       </div>
@@ -265,7 +283,7 @@ export default async function Plans() {
           <p>Compare every feature line-by-line. Premium is {money(199)} for 1 year with 200 AI credits, plus {money(100)} top-ups for +150 AI credits.</p>
         </div>
       </div>
-      <PlanContent preview={preview} billing={billing.data} />
+      <PlanContent signedIn={signedIn} />
     </>
   );
 }

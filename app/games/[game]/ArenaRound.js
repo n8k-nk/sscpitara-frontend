@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "../../../components/NavigationLink";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { send } from "../../../lib/client";
 import { levelHref, nextPlayableLevel, rememberGuestLevel, withGuestProgress } from "../progress";

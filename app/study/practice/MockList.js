@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link from "../../../components/NavigationLink";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { send } from "../../../lib/client";

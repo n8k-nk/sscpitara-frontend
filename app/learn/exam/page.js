@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "../../../components/NavigationLink";
 import { notFound } from "next/navigation";
 import Overview from "../../../components/learn/Overview";
 import { call } from "../../../lib/server";

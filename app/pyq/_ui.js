@@ -1,13 +1,15 @@
-import Link from "next/link";
+import Link from "../../components/NavigationLink";
 import Rich from "../../components/Rich";
 import PyqQuestion from "../../components/PyqQuestion";
 import PyqSignup from "../../components/PyqSignup";
 import Unlock from "../../components/PyqUnlock";
 import { site } from "../../lib/public";
-import { getOverview, n, rankTopics } from "../../lib/pyq";
+import { n, rankTopics } from "../../lib/pyq";
 
 const SOURCE = { official: "Official answer key", expert: "Expert reviewed", ai: "AI generated" };
-const when = (iso, opts) => new Date(`${iso}T00:00:00+05:30`).toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata", ...opts });
+const dayDate = new Intl.DateTimeFormat("en-IN", { timeZone: "Asia/Kolkata", day: "numeric", month: "short" });
+const weekday = new Intl.DateTimeFormat("en-IN", { timeZone: "Asia/Kolkata", weekday: "long" });
+const heldDate = (iso) => new Date(`${iso}T00:00:00+05:30`);
 export const query = (p) => new URLSearchParams(Object.entries(p).filter(([, v]) => v)).toString();
 export const withQuery = (path, p) => (query(p) ? `${path}?${query(p)}` : path);
 
@@ -39,9 +41,9 @@ function Days({ papers }) {
   }
   const days = [...byDate.entries()].sort(([a], [b]) => (a < b ? 1 : -1));
   return <ul className="pyq-days">{days.map(([key, list]) => <li key={key}>
-    <div className="pyq-day"><strong>{list[0].held_on ? when(list[0].held_on, { day: "numeric", month: "short" }) : list[0].stage}</strong>
-      <span className="muted">{list[0].held_on ? when(list[0].held_on, { weekday: "long" }) : ""}</span></div>
-    <div className="pyq-shifts">{list.map((p) => <Link key={p.slug} href={`/pyq/${p.path}/`} className={`pyq-shift${p.locked ? " locked" : ""}`}>
+    <div className="pyq-day"><strong>{list[0].held_on ? dayDate.format(heldDate(list[0].held_on)) : list[0].stage}</strong>
+      <span className="muted">{list[0].held_on ? weekday.format(heldDate(list[0].held_on)) : ""}</span></div>
+    <div className="pyq-shifts">{list.map((p) => <Link key={p.slug} href={`/pyq/${p.path}/`} prefetch={false} className={`pyq-shift${p.locked ? " locked" : ""}`}>
       <span>{p.shift ? `Shift ${p.shift}` : p.name || "Paper"}{p.locked && " 🔒"}</span>
       <small>{p.locked ? "Premium" : p.done > 0 ? `${p.done}/${p.questions} done` : `${p.questions} Q`}</small>
     </Link>)}</div>
@@ -188,8 +190,7 @@ export function QuestionFeed({ data, pageHref, skillPractice = false }) {
 }
 
 /** Buttons to move between a learner's own exams. Renders nothing when they have only one (or are signed out and only one exists). */
-export async function ExamSwitch({ current }) {
-  const { exams } = await getOverview();
+export function ExamSwitch({ current, exams }) {
   if (exams.length < 2) return null;
   return <nav className="pyq-exams" aria-label="Exam">{exams.map((e) =>
     <Link key={e.code} href={`/pyq/${e.slug}/`} aria-current={e.slug === current ? "page" : undefined}>
@@ -197,14 +198,14 @@ export async function ExamSwitch({ current }) {
 }
 
 /** An exam's landing content: papers by year, with a link to the topic view. */
-export async function ExamLanding({ exam, stage }) {
+export function ExamLanding({ exam, stage, switchExams }) {
   const years = stage ? exam.years.map((year) => ({ ...year, papers: year.papers.filter((paper) => paper.stage === stage) }))
     .filter((year) => year.papers.length) : exam.years;
   const papers = years.flatMap((year) => year.papers);
   return <>
     <div className="page-head pyq-cover"><span className="eyebrow">SSC {exam.code} · {stage || "Paper archive"}</span><h1>Previous year papers</h1>
       <p>{n(papers.length)} papers · {n(papers.reduce((sum, paper) => sum + paper.questions, 0))} questions · {years.length} exam years</p></div>
-    <ExamSwitch current={exam.slug} />
+    <ExamSwitch current={exam.slug} exams={switchExams} />
     <ExamTabs exam={exam} active="year" stage={stage} />
     <Years years={years} />
   </>;

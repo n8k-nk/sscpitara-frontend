@@ -1,6 +1,5 @@
-import Overview from "../../../../components/learn/Overview";
+import CglOverview from "../../../../components/learn/CglOverview";
 import { metadata as pageMetadata } from "../../../../lib/public";
-import { call } from "../../../../lib/server";
 
 export const metadata = pageMetadata(
   "SSC CGL Tier II: learn and practise",
@@ -8,7 +7,6 @@ export const metadata = pageMetadata(
   "/learn/cgl/tier-ii/",
 );
 
-export default async function TierTwo() {
-  const { data: d } = await call("learn/cgl/tier-ii");
-  return <Overview d={d} here="/learn/cgl/tier-ii/" title="Learn" intro="The first two lessons are open with or without an account. Every other lesson is part of Premium." />;
+export default function TierTwo() {
+  return <CglOverview tierTwo />;
 }
