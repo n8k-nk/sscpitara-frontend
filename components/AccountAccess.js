@@ -10,6 +10,7 @@ const GOOGLE_ERRORS = {
   token_failed: "Could not complete Google sign-in. Please try again.",
   oauth_failed: "Could not reach Google sign-in. Please try again.",
   unverified_email: "Your Google account email must be verified to sign in.",
+  account_disabled: "This account is disabled. Contact support if you think this is a mistake.",
 };
 
 export default function AccountAccess({
