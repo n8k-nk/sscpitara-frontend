@@ -8,6 +8,7 @@ import SiteFooter from "../components/SiteFooter";
 import ExamPicker from "../components/ExamPicker";
 import { studyContext } from "../lib/study-scope";
 import { Suspense } from "react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "katex/dist/katex.min.css";
 import "./style.css";
 
@@ -52,5 +53,6 @@ export default async function Layout({ children }) {
       user={user}
       footer={<Suspense fallback={null}><ShellFooter /></Suspense>}
     >{children}</AppShell>
+    <SpeedInsights />
   </body></html>;
 }
