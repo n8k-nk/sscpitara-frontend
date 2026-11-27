@@ -365,7 +365,9 @@ export default function TutorChat({ initialThread = null, userName }) {
   }, [cancelVoice, resumeActiveStream, setActiveRun]);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: loading ? "auto" : "smooth" });
+    // Scroll only the message list. scrollIntoView would also scroll the page and move the composer.
+    const area = messagesAreaRef.current;
+    area?.scrollTo({ top: area.scrollHeight, behavior: loading ? "auto" : "smooth" });
   }, [messages, loading]);
 
   useEffect(() => {

@@ -20,7 +20,8 @@ export const metadata = {
 const themeOf = async () => ((await cookies()).get("theme")?.value === "light" ? "light" : "dark");
 
 export async function generateViewport() {
-  return { themeColor: (await themeOf()) === "light" ? "#ffffff" : "#0a0a0a" };
+  // resizes-content: the on-screen keyboard shrinks the page instead of sliding over the chat composer.
+  return { themeColor: (await themeOf()) === "light" ? "#ffffff" : "#0a0a0a", interactiveWidget: "resizes-content" };
 }
 
 

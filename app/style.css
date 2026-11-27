@@ -159,9 +159,6 @@ ol, ul { padding-left: 1.25rem; }
 .side-nav a[aria-current] {
   color: var(--ink); font-weight: 760;
 }
-.side-nav a[aria-current]::before {
-  content: ""; position: absolute; left: .15rem; top: calc(50% - 2.5px); width: 5px; height: 5px; border-radius: 50%; background: var(--accent);
-}
 .nav-mark { display: grid; place-items: center; flex: none; width: 1.25rem; height: 1.25rem; color: var(--muted); }
 .side-nav[aria-label="Main"] a { padding-inline-start: 1.25rem; font-size: 1rem; }
 .nav-mark svg { width: 100%; height: 100%; }
