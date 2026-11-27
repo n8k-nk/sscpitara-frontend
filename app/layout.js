@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { site, indexable } from "../lib/public";
+import { site, indexable, SHARE_IMAGE } from "../lib/public";
 import { session } from "../lib/server";
 import ThemeToggle from "../components/ThemeToggle";
 import Capture from "../components/Capture";
@@ -14,6 +14,8 @@ import "./style.css";
 export const metadata = {
   metadataBase: site,
   title: { default: "SSC Pitara", template: "%s | SSC Pitara" },
+  openGraph: { siteName: "SSC Pitara", type: "website", images: [SHARE_IMAGE] },
+  twitter: { card: "summary_large_image", images: [SHARE_IMAGE.url] },
   robots: indexable ? { index: true, follow: true } : { index: false, follow: false },
 };
 

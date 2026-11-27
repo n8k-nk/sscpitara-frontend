@@ -3,8 +3,6 @@ import { site, readExams, readPyqOverview, readPyqSitemap } from "../lib/public"
 import { games, gameHref } from "./games/catalog";
 export const dynamic = "force-dynamic";
 
-const PAPER_PAGE_SIZE = 20;
-
 export default async function sitemap() {
   const [exams, pyq, pyqIds] = await Promise.all([
     readExams(),
@@ -33,13 +31,8 @@ export default async function sitemap() {
     paths.push(`/pyq/${e.slug}/`, `/pyq/${e.slug}/topics/`);
     for (const y of e.years) {
       paths.push(`/pyq/${e.slug}/${y.year}/`);
-      for (const p of y.papers) {
-        paths.push(`/pyq/${p.path}/`);
-        const pages = Math.ceil((p.questions || 0) / PAPER_PAGE_SIZE);
-        for (let page = 2; page <= pages; page += 1) {
-          paths.push(`/pyq/${p.path}/?page=${page}`);
-        }
-      }
+      // Only pages a signed-out visitor can read: locked papers and later pages show placeholders.
+      for (const p of y.papers) if (!p.locked) paths.push(`/pyq/${p.path}/`);
     }
     const topics = new Set(e.topic_stats.map((t) => `/pyq/${e.slug}/topics/${t.subject}/${t.topic_slug}/`));
     paths.push(...topics);

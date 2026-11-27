@@ -31,11 +31,15 @@ export async function generateMetadata({ params }) {
     ? `SSC ${paper.exam} ${paper.year} ${q.subject} Q${q.number}`
     : plainSnippet(q.text, 68) || `SSC ${paper.exam} ${paper.year} Q${q.number}`;
 
-  return pageMetadata(
+  const page = pageMetadata(
     `${snippet} — SSC ${paper.exam} ${paper.year} PYQ`,
-    `Practice this SSC ${paper.exam} ${paper.stage} (${paperLabel(paper)}) ${q.subject} — ${q.topic} question with answer and explanation on SSC Pitara.`,
+    q.locked
+      ? `SSC ${paper.exam} ${paper.stage} (${paperLabel(paper)}) ${q.subject} question on ${q.topic}. Part of SSC Pitara Premium.`
+      : `Practise this SSC ${paper.exam} ${paper.stage} (${paperLabel(paper)}) ${q.subject} question on ${q.topic}, with its answer.`,
     `/pyq/q/${q.id}/`,
   );
+  // A locked question has nothing for a searcher to read.
+  return q.locked ? { ...page, robots: { index: false, follow: true } } : page;
 }
 
 function buildQaJsonLd(q) {

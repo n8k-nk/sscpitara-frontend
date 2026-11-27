@@ -17,11 +17,13 @@ async function load(params, page) {
 
 export async function generateMetadata({ params, searchParams }) {
   const page = pageOf((await searchParams).page);
-  const { paper, base } = await load(params, page);
+  const { data, paper, base } = await load(params, page);
   if (!paper) return {};
-  return pageMetadata(`SSC ${paper.exam} ${paper.stage} ${paperLabel(paper)} question paper with answers`,
+  const meta = pageMetadata(`SSC ${paper.exam} ${paper.stage} ${paperLabel(paper)} question paper with answers`,
     `Free SSC ${paper.exam} ${paper.stage} question paper held on ${paperLabel(paper)}: ${paper.questions} questions with answers. Sign up to attempt them.`,
     page > 1 ? withQuery(base, { page }) : base);
+  // Locked papers and later pages show visitors placeholders, so keep them out of search results.
+  return data.paper_locked || page > 1 ? { ...meta, robots: { index: false, follow: true } } : meta;
 }
 
 export default async function PaperPage({ params, searchParams }) {
