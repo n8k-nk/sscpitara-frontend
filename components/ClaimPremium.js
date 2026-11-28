@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { send } from "../lib/client";
+import { track } from "../lib/track";
 
 export default function ClaimPremium({ label = "Get Premium · ₹0", className = "button block" }) {
   const router = useRouter();
@@ -15,6 +16,7 @@ export default function ClaimPremium({ label = "Get Premium · ₹0", className 
     setError("");
     const { ok, data } = await send("billing/claim-free", {}, "POST");
     if (ok) {
+      track("claim_premium");
       router.push("/");
       router.refresh();
       return;

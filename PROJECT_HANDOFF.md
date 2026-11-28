@@ -71,6 +71,22 @@ On 25 November 2026, `manage.py map_tier_ii` backfilled 524 published Tier II PY
 
 Tier II subject pages now show the eligible PYQ count beside each lesson duration and label skills with zero eligible questions “No linked PYQs.” The count uses the same pool as the lesson’s Practice step. Verified that the Reasoning list and Practice step both show 10 questions for Statements and conclusions at 390px and 1440px. All 104 Learn and PYQ tests passed.
 
+## Server capacity
+
+27 November 2026: `gunicorn.conf.py` runs one process with 32 threads (`GUNICORN_THREADS`). Keep one process and one instance while AI Tutor holds running replies in memory (`tutor/runs.py`). Signed-out PYQ and Learn overview responses are cached whole, and signed-in PYQ pages share the question and facet data for the same filters (10 minutes on any network database, off locally). Tutor streams release their database connection; the pool maximum is `DB_POOL_MAX` (15). Local Gunicorn served about 1,300 cached requests a second at 40 concurrent. The deployed service has not been retested. Before the change, live bursts slowed at about 10 concurrent PYQ overview requests.
+
+## Account security
+
+27 November 2026: only unfinished sign-ups (inactive, never signed in, with a pending OTP) can be activated. Google activation discards the unverified password, and OTP activation keeps it only in the browser that set it. Disabled accounts stay disabled. Resend and verify answer the same way for unknown emails; sign-up still reports existing accounts. Passwords planted before this fix were not removed. Tests: `exams/test_account_security.py`. The full suite had 11 failures and 6 errors both before and after, run against a local database.
+
+## Model API keys
+
+27 November 2026: `COARENA_API_KEYS` (comma separated) adds keys to `COARENA_API_KEY`, all for the same base URL and model. Requests take turns (`study/key_pool.py`). HTTP 401, 402, 403 and 429 try the remaining keys; timeouts, network and server errors try one other key; other errors are not retried. A reply that has started is never retried. Failed keys rest (60 seconds or Retry-After for 429, 10 minutes for 401 to 403, 15 seconds for server errors), held in process memory. Tests: `study/test_key_pool.py`. Not tried against the live model service.
+
+## Search engines
+
+28 November 2026: the Vercel production deployment is indexable and uses `https://www.sscpitara.in` when `SITE_URL` is unset; previews and local runs are not indexed. The sitemap lists only pages a visitor can read (free papers and their questions, no later paper pages). Locked question and paper pages are `noindex`. The share image is `frontend/public/images/share.png`. Verified with a local production build: 3,895 sitemap URLs. Search Console submission after deployment is pending.
+
 ## Public homepage
 
 The signed-out SSC hero uses HeroAnimation.js. The 23.8-second cycle types through Learn, a real PYQ, AI Tutor and an example study plan, with pause and scene selection controls. Playback pauses outside the viewport or in a hidden tab. Reduced motion starts with a still scene. The earlier showreel remains available in its original component.
@@ -155,6 +171,12 @@ A completed CGL Tier I PYQ mock can now recommend one untimed, premium practice 
 Backend entry points are `study/followup.py` and `study/views.py`. The shared UI is `components/PyqFollowup.js` in the frontend. Ordinary PYQ answers live in `pyq.Attempt`; mock and follow-up answers live in `study.Item`. Freshness uses the source question ID across both. Timing and daily scheduling for a delayed retest remain open.
 
 Verification on 24 November 2026: all 36 Study and PYQ tests passed and the Next.js production build succeeded. A rolled-back local archive check with a 2025 CGL paper produced one Percentage question to review and six fresh questions. These checks establish the feature behaviour. They do not establish a learning outcome.
+
+## Home trust fixes and visitor analytics (28 November 2026; home fixes pushed in 4ab8786, analytics not yet committed)
+
+The home page no longer shows a calculated premium user count. The testimonial section keeps its design and is labelled "Study examples", not user reviews.
+
+Google Analytics 4 and Microsoft Clarity load from `components/Analytics.js` when Vercel has `GA_ID` and `CLARITY_ID` and the site is indexable. They are skipped on admin, password reset, email verification and shared tutor URLs. Signed-in page text is masked for Clarity. Events: `sign_up` (email only; Google sign-up is not recorded), `claim_premium`, `begin_checkout`, `purchase`. The privacy policy has an Analytics section. There is no cookie consent prompt. Verified with a production build and a browser run using test IDs with external requests blocked. Next: the owner creates both accounts, sets the IDs and redeploys.
 
 ## Next proposed work
 

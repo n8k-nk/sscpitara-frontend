@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { send } from "../lib/client";
+import { track } from "../lib/track";
 
 const SCRIPT = "https://checkout.razorpay.com/v1/checkout.js";
 
@@ -25,12 +26,17 @@ export default function Pay({ price, kind = "premium", label }) {
     if (!ok) { setStatus(data.error ?? "Checkout is unavailable right now."); setBusy(false); return; }
     if (data.already) { router.refresh(); return; }
     try { await loadRazorpay(); } catch (error) { setStatus(error.message); setBusy(false); return; }
+    const order = { currency: data.options.currency ?? "INR", value: data.options.amount / 100, items: [{ item_id: kind }] };
+    track("begin_checkout", order);
     const checkout = new window.Razorpay({
       ...data.options,
       handler: async (response) => {
         setStatus("Confirming your payment…");
         const result = await send("billing/confirm", response);
-        if (result.ok) { router.refresh(); return; }
+        if (result.ok) {
+          track("purchase", { ...order, transaction_id: response.razorpay_order_id });
+          router.refresh(); return;
+        }
         setStatus(result.data.error ?? "We could not confirm the payment yet. Use “Check payment status” in a moment.");
         setBusy(false); router.refresh();
       },

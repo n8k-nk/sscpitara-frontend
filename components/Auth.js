@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { send, safeNext } from "../lib/client";
 import { Errors, Field } from "./Fields";
+import { track } from "../lib/track";
 
 const PASSWORD_HELP = "At least 8 characters. Avoid common or all-number passwords and anything similar to your email.";
 
@@ -64,6 +65,7 @@ export default function Auth({ mode, next }) {
       setBusy(false);
       return;
     }
+    track("sign_up", { method: "email" });
     router.push(safeNext(next, !data.profileComplete ? "/onboarding/" : "/account/"));
     router.refresh();
   }

@@ -3,6 +3,7 @@ import { site, indexable, SHARE_IMAGE } from "../lib/public";
 import { session } from "../lib/server";
 import ThemeToggle from "../components/ThemeToggle";
 import Capture from "../components/Capture";
+import Analytics from "../components/Analytics";
 import AppShell from "../components/AppShell";
 import SiteFooter from "../components/SiteFooter";
 import ExamPicker from "../components/ExamPicker";
@@ -45,8 +46,9 @@ export default async function Layout({ children }) {
     credits: rawUser.credits ?? 0,
     premium: Boolean(rawUser.premium),
   };
-  return <html lang="en" data-theme={theme} suppressHydrationWarning><body>
+  return <html lang="en" data-theme={theme} suppressHydrationWarning><body data-clarity-mask={user.authenticated ? "true" : undefined}>
     <Capture />
+    {indexable && <Analytics ga={process.env.GA_ID?.trim()} clarity={process.env.CLARITY_ID?.trim()} />}
     <a className="skip" href="#main">Skip to content</a>
     <AppShell
       collapsed={jar.get("sidebar")?.value === "collapsed"}
