@@ -39,34 +39,6 @@ function stripMarkdownBold(text) {
   return typeof text === "string" ? text.replace(/\*\*/g, "") : "";
 }
 
-const PREMIUM_BASE_COUNT = 3234;
-const PREMIUM_ANCHOR_UTC = Date.UTC(2026, 10, 26); // 26 Nov 2026
-const PREMIUM_TARGET_DAYS = 35; // 26 Nov -> 31 Dec 2026 (+1,000 users)
-const MS_PER_DAY = 86_400_000;
-
-function istDayIndex(now = new Date()) {
-  const ist = new Date(now.getTime() + 5.5 * 3600 * 1000);
-  const todayUtc = Date.UTC(ist.getUTCFullYear(), ist.getUTCMonth(), ist.getUTCDate());
-  return Math.max(0, Math.floor((todayUtc - PREMIUM_ANCHOR_UTC) / MS_PER_DAY));
-}
-
-function dailyJitter(day) {
-  if (day === 0 || day === PREMIUM_TARGET_DAYS) return 0;
-  // Deterministic 32-bit mix mapped to [-10, +10]; since base slope is ~28.57/day
-  // and |jitter(d+1) - jitter(d)| <= 20, the total is strictly increasing every day.
-  let x = (day * 0x9e3779b1) >>> 0;
-  x = Math.imul(x ^ (x >>> 16), 0x85ebca6b) >>> 0;
-  x = Math.imul(x ^ (x >>> 13), 0xc2b2ae35) >>> 0;
-  x = (x ^ (x >>> 16)) >>> 0;
-  return (x % 21) - 10;
-}
-
-function getPremiumUserCount(now = new Date()) {
-  const days = istDayIndex(now);
-  const trend = PREMIUM_BASE_COUNT + Math.round((1000 * days) / PREMIUM_TARGET_DAYS);
-  return trend + dailyJitter(days);
-}
-
 function formatNewsPreview(data) {
   const story = data?.stories?.[0];
   if (!story?.title) return null;
@@ -90,7 +62,6 @@ function formatNewsPreview(data) {
 
 export default async function Home() {
   if ((await session()).authenticated) redirect("/learn/");
-  const premiumUsers = getPremiumUserCount().toLocaleString("en-IN");
 
   return <div className={css.home}>
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: STRUCTURED_DATA }} />
@@ -109,10 +80,6 @@ export default async function Home() {
             <Link href="/signup/" className={css.primaryCta}>Start learning for free</Link>
             <Link href="/plans/" className={css.heroSecondaryLink}>Get Premium Free <Arrow /></Link>
           </div>
-          <p className={css.heroProof}>
-            <span className={css.heroProofDot} aria-hidden="true" />
-            <strong>{premiumUsers}</strong> premium users preparing on SSC Pitara
-          </p>
         </div>
         <HeroAnimation />
       </section>

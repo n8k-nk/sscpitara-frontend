@@ -3692,28 +3692,6 @@
 }
 .productLead { max-width: 46ch; margin: 1rem auto 1.4rem; color: var(--lp-muted); }
 .productActions { display: flex; justify-content: center; flex-wrap: wrap; gap: .55rem 1.25rem; align-items: center; }
-.heroProof {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: .5rem;
-  margin: 1rem auto 0;
-  padding: .35rem .85rem;
-  border: 1px solid var(--lp-line);
-  border-radius: 999px;
-  background: var(--lp-alt);
-  color: var(--lp-muted);
-  font-size: .875rem;
-  line-height: 1.3;
-}
-.heroProof strong { color: var(--lp-ink); font-weight: 700; font-variant-numeric: tabular-nums; }
-.heroProofDot {
-  width: .5rem;
-  height: .5rem;
-  border-radius: 50%;
-  background: var(--lp-ok);
-  flex: none;
-}
 .offerBar {
   display: flex;
   flex-wrap: wrap;

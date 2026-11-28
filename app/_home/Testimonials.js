@@ -12,7 +12,7 @@ const LEFT_COLUMN = [
     dept: "CBDT",
     tone: "blue",
     quote:
-      "Repeating mixed mocks without fixing weak topics kept me stuck around 132 in Tier I. Switching to topic-wise PYQs here exposed that Percentage and Profit-Loss time traps cost me 14 marks alone. Practicing 2022 to 2026 shifts cleanly pushed my Tier I score past 166 and helped me land Income Tax Inspector.",
+      "Mixed mocks alone can hide weak spots. Use topic-wise PYQs to see whether Percentage or Profit and Loss is costing you marks, then practise recent shifts on those topics.",
   },
   {
     name: "Sneha Verma",
@@ -20,7 +20,7 @@ const LEFT_COLUMN = [
     dept: "CAG",
     tone: "emerald",
     quote:
-      "AAO needed solid Paper III Finance and Economics prep alongside Tier I. Having structured draft lessons and topic-tagged PYQs in one workspace saved me hours of hunting PDFs. Revising accounting ratios and macro concepts every third day with spaced recall made Paper III feel straightforward on exam day.",
+      "AAO aspirants need Paper III Finance and Economics alongside Tier I. Keep lessons and topic-tagged PYQs in one place, and bring accounting and economics concepts back through spaced review.",
   },
   {
     name: "Rohan Deshmukh",
@@ -28,7 +28,7 @@ const LEFT_COLUMN = [
     dept: "MEA",
     tone: "amber",
     quote:
-      "Targeting ASO in MEA leaves zero margin for silly errors in English and Reasoning. Using the mistake review and AI Tutor hints forced me to attempt the first step on Cloze tests and syllogisms instead of reading solutions blindly. My accuracy in Tier II English touched 95%.",
+      "Small errors in English and Reasoning add up. Review each mistake, and ask AI Tutor for a first-step hint on cloze tests and syllogisms before reading the full solution.",
   },
   {
     name: "Ananya Iyer",
@@ -36,7 +36,7 @@ const LEFT_COLUMN = [
     dept: "CBIC",
     tone: "violet",
     quote:
-      "The 15-minute sectional timing analytics showed I was spending nearly 2 minutes per Geometry question while leaving easier Mensuration marks on the table. Three weeks of Math Sprint drills and chapter-scoped CGL PYQs cut my Quant average time down enough to finish comfortably with review time left.",
+      "Check where your time goes. If Geometry takes far longer than Mensuration, drill the slower chapter with chapter-wise CGL PYQs and speed games.",
   },
   {
     name: "Vivek Mishra",
@@ -44,7 +44,7 @@ const LEFT_COLUMN = [
     dept: "ED",
     tone: "blue",
     quote:
-      "I used to read 40-page current affairs PDFs every month and forget half of them by Tier II. Five minutes a day flipping the concise Hindi-English cards plus static polity lessons kept Articles, Constitutional Bodies, and awards fresh all the way to final selection as AEO.",
+      "Long monthly PDFs are hard to remember. Spend a few minutes a day on short Hindi and English current affairs cards, and keep polity lessons in your review queue.",
   },
   {
     name: "Priya Nair",
@@ -52,7 +52,7 @@ const LEFT_COLUMN = [
     dept: "CSS",
     tone: "emerald",
     quote:
-      "Working full-time left me barely 75 minutes on weekdays. The 7-day planner automatically picked my lowest-accuracy chapters and overdue reviews so I never wasted 20 minutes deciding what to study. That daily consistency took me straight into CSS ASO.",
+      "Studying around a job? Let the seven-day plan pick weak chapters and due reviews, so your limited time goes into studying instead of deciding what to study.",
   },
   {
     name: "Siddharth Kulkarni",
@@ -60,7 +60,7 @@ const LEFT_COLUMN = [
     dept: "CBIC",
     tone: "amber",
     quote:
-      "Tier II Computer Knowledge is an instant qualifier barrier many ignore until the final week. Doing the structured OSI layers, MS Excel shortcuts, and networking drills plus Computer Keys kept me way above the cutoff without eating into Maths revision.",
+      "Don’t leave Tier II Computer Knowledge for the last week. Work through the available lessons and short drills alongside your Maths revision.",
   },
   {
     name: "Neha Choudhary",
@@ -68,7 +68,7 @@ const LEFT_COLUMN = [
     dept: "CBI",
     tone: "violet",
     quote:
-      "What stood out was first-attempt tracking. Other platforms count questions you re-solved after peeking at solutions. Only counting honest first answers showed where my Trigonometry and Statement-Conclusion logic actually stood, turning weak areas into scoring sections for CBI.",
+      "First answers show where you really stand. Track them to see whether Trigonometry or Statement and Conclusion needs more work before your next mock.",
   },
   {
     name: "Harshvardhan Patel",
@@ -76,7 +76,7 @@ const LEFT_COLUMN = [
     dept: "CAG",
     tone: "blue",
     quote:
-      "Every post-mock summary mapped lost marks straight to exact topics and follow-up PYQs I had never seen before. Fixing Number System and Time & Work gaps right after each Sunday mock helped me move from Tax Assistant merit in my first attempt to Divisional Accountant.",
+      "After a mock, trace lost marks to exact topics. Follow up with PYQs you haven’t seen on Number System or Time and Work while the mistakes are fresh.",
   },
   {
     name: "Tanvi Saxena",
@@ -84,7 +84,7 @@ const LEFT_COLUMN = [
     dept: "CBIC",
     tone: "emerald",
     quote:
-      "Tier II Data Entry Speed Test used to make me anxious because my keystrokes dropped under countdown stress. Practising on the split-screen typing runner with matching speed telemetry built real composure and helped me clear Examiner comfortably.",
+      "The Data Entry test is easier to face when it feels familiar. Practise on the side-by-side typing screen with the timer running.",
   },
   {
     name: "Karthik Subramanian",
@@ -92,7 +92,7 @@ const LEFT_COLUMN = [
     dept: "MoSPI",
     tone: "amber",
     quote:
-      "Finding clean, verified Paper II Statistics practice outside scattered coaching notes is tough. Working through Variance, Regression, and Probability lessons alongside the eligible question bank gave me the exact clarity needed to qualify for JSO.",
+      "Paper II Statistics practice can be scattered. Bring Variance, Regression and Probability study together, and check which lessons and questions are available for each.",
   },
   {
     name: "Ritu Joshi",
@@ -100,7 +100,7 @@ const LEFT_COLUMN = [
     dept: "MoD",
     tone: "violet",
     quote:
-      "Word Relay and idiom flashcards turned vocabulary revision into a quick night habit instead of boring rote lists. Idioms, OWS, and active-passive rules that used to cost me negative marks in Tier I became guaranteed 100% accuracy points.",
+      "Turn vocabulary into a short evening habit. Word games and revision of idioms, one-word substitutions and voice rules can sit alongside your PYQs.",
   },
   {
     name: "Manish Tiwari",
@@ -108,7 +108,7 @@ const LEFT_COLUMN = [
     dept: "DoP",
     tone: "blue",
     quote:
-      "AI Tutor never spoon-fed final answers when I got stuck in Algebra or Venn diagrams; it nudged me with the exact theorem or substitution I missed and cited real PYQ patterns. Retaining methods learned that way lasted months longer.",
+      "Stuck on Algebra or a Venn diagram? Ask AI Tutor for a hint on the missing step, try again, and only then compare the worked solution.",
   },
   {
     name: "Pooja Bansal",
@@ -116,7 +116,7 @@ const LEFT_COLUMN = [
     dept: "CAG",
     tone: "emerald",
     quote:
-      "After scoring below 110 in my first mock, I felt completely overwhelmed by the CGL syllabus. Following the Learn path step-by-step from foundation arithmetic to recent shift papers gave structure to every study hour until final merit.",
+      "A low first mock can feel overwhelming. Start the Learn path from basic arithmetic and move to recent shift papers one step at a time.",
   },
   {
     name: "Aditya Narayan",
@@ -124,7 +124,7 @@ const LEFT_COLUMN = [
     dept: "MOR",
     tone: "amber",
     quote:
-      "Reasoning Pattern Rush and Decision Making PYQs from the latest 2025-2026 shifts prepared me for the new Tier I/II twists that older books skipped completely. Zero surprises when sitting in the actual examination hall.",
+      "Question styles change between cycles. Include Reasoning and Decision Making PYQs from recent shifts so newer patterns don’t surprise you.",
   },
 ];
 
@@ -135,7 +135,7 @@ const RIGHT_COLUMN = [
     dept: "CBDT",
     tone: "emerald",
     quote:
-      "Switching from random YouTube marathons to timed shift-wise PYQ mocks here changed my score trajectory completely. Checking exact viewing time per wrong answer showed I over-invested 3 minutes on tricky DI tables while rushing easy GS questions.",
+      "Practise timed shift papers, then check time spent on wrong answers. It can show whether Data Interpretation tables are taking time from easier questions.",
   },
   {
     name: "Ankit Yadav",
@@ -143,7 +143,7 @@ const RIGHT_COLUMN = [
     dept: "CAG",
     tone: "blue",
     quote:
-      "Paper III Finance & Economics plus Paper I Quant meant juggling massive revision volume. Using the AI Tutor's quick revision notes and Quiz widgets turned bulky fiscal policy and trial balance concepts into 5-minute active recall sessions.",
+      "Large revision loads are easier in short sessions. Ask AI Tutor for revision notes or a quick quiz on fiscal policy and accounting basics, and verify them against your sources.",
   },
   {
     name: "Shreya Mukherjee",
@@ -151,7 +151,7 @@ const RIGHT_COLUMN = [
     dept: "MEA",
     tone: "violet",
     quote:
-      "MEA required top rank in Tier II Paper I. Combining full-length CGL mocks with targeted sectional builders for Para-jumbles and Reading Comprehension pushed my overall percentile consistently into the top bracket.",
+      "For Tier II English, combine full mocks with sectional practice on para-jumbles and reading comprehension.",
   },
   {
     name: "Pranav Agarwal",
@@ -159,7 +159,7 @@ const RIGHT_COLUMN = [
     dept: "CBIC",
     tone: "amber",
     quote:
-      "I struggled with Geometry circle tangents and similarity proofs for two attempts. Drawing clean step-by-step diagrams with the tutor and practising 2023-2026 PYQs right after each lesson finally clicked every theorem visually.",
+      "Make Geometry visual. Ask for a diagram when a circle or similarity step isn’t clear, then practise related PYQs right after the lesson.",
   },
   {
     name: "Meenakshi Rao",
@@ -167,7 +167,7 @@ const RIGHT_COLUMN = [
     dept: "CSS",
     tone: "blue",
     quote:
-      "Clean, distraction-free interface with zero promotional clutter. Opening the platform meant opening Analytics, hitting Today's 3 focused study blocks, clearing due reviews, and closing with 10 real PYQs. CSS ASO felt earned step by step.",
+      "Open your plan, clear the reviews that are due and finish with a short set of PYQs. A simple routine is easier to repeat every day.",
   },
   {
     name: "Gaurav Chauhan",
@@ -175,7 +175,7 @@ const RIGHT_COLUMN = [
     dept: "CBI",
     tone: "emerald",
     quote:
-      "Penalty-mark breakdowns after every mock cured my habit of wild guessing in General Awareness. Once I stopped losing 6-8 net marks to avoidable negatives and strengthened Polity & History PYQs, my normalized rank jumped dramatically.",
+      "Look at penalty marks after every mock. If guesses in General Awareness are costing you, practise Polity and History PYQs and skip when you’re unsure.",
   },
   {
     name: "Kajal Rajput",
@@ -183,7 +183,7 @@ const RIGHT_COLUMN = [
     dept: "CBIC",
     tone: "violet",
     quote:
-      "Bilingual support in Current Affairs and AI explanations helped me bridge English comprehension speed while keeping General Awareness concepts sharp in Hindi. Practising 2024 Tier I & II papers side-by-side built huge confidence.",
+      "Read current affairs in Hindi or English, whichever is clearer to you, and practise Tier I and Tier II papers to build comfort with both.",
   },
   {
     name: "Nikhil Saini",
@@ -191,7 +191,7 @@ const RIGHT_COLUMN = [
     dept: "ED",
     tone: "amber",
     quote:
-      "Re-attempting unseen fresh PYQs on my weak topics one week after a mock proved whether I had truly fixed the concept or just remembered the answer key. That feedback loop is what turned 280-level mocks into AEO selection.",
+      "A week after a mock, retry weak topics with fresh questions. It shows whether you learned the method or only remembered the answer.",
   },
   {
     name: "Kavya Menon",
@@ -199,7 +199,7 @@ const RIGHT_COLUMN = [
     dept: "CGA",
     tone: "blue",
     quote:
-      "Having 200 Tier I mocks, 35 Tier II mocks, and full official archive papers all following exact SSC block timing taught me real stamina. By exam day, switching cleanly from Quant to Reasoning to English felt completely automatic.",
+      "Exam stamina takes practice. Sit full mocks with section timing so moving between Quant, Reasoning and English becomes familiar.",
   },
   {
     name: "Saurabh Pandey",
@@ -207,7 +207,7 @@ const RIGHT_COLUMN = [
     dept: "CAG",
     tone: "emerald",
     quote:
-      "Math Sprint levels starting from tables and fractions up to successive percentages doubled my mental calculation speed. Saving 10-12 minutes in Tier I Quant directly lifted my Reasoning and GS scores too.",
+      "Faster calculation helps every Quant question. Build up from tables and fractions to successive percentages with speed games.",
   },
   {
     name: "Bhavna Sethi",
@@ -215,7 +215,7 @@ const RIGHT_COLUMN = [
     dept: "CBDT",
     tone: "violet",
     quote:
-      "As a first-time aspirant starting from zero in Arithmetic, the Learn foundation path never threw advanced shortcuts at me before explaining the core concept first. Each 15-minute lesson followed by real archive questions built steady momentum.",
+      "Starting from zero in Arithmetic? Learn the basic idea first, then move to real previous year questions before trying shortcuts.",
   },
   {
     name: "Vikramaditya Roy",
@@ -223,7 +223,7 @@ const RIGHT_COLUMN = [
     dept: "CVC",
     tone: "amber",
     quote:
-      "The 1-year spaced review reminders brought back tricky Constitutional Amendments and Biology classifications right before I would have forgotten them. General Awareness went from my scariest paper to a reliable score booster.",
+      "General Awareness fades quickly. Use spaced review to revisit constitutional amendments and Biology classifications before you forget them.",
   },
   {
     name: "Nisha Kashyap",
@@ -231,7 +231,7 @@ const RIGHT_COLUMN = [
     dept: "CGDA",
     tone: "blue",
     quote:
-      "Computer Knowledge modules covering DBMS, e-banking, and shortcuts in Tier II Paper I saved me when several candidates with higher Paper I scores missed the Computer sectional qualifying mark.",
+      "Give Computer Knowledge a regular slot for DBMS, e-banking and shortcuts, so Tier II Paper I doesn’t depend on last-minute reading.",
   },
   {
     name: "Deepak Sinha",
@@ -239,7 +239,7 @@ const RIGHT_COLUMN = [
     dept: "RGI",
     tone: "emerald",
     quote:
-      "Building custom sectional tests only from my weak chapters (Mensuration 3D and Trigonometry heights) eliminated wasted hours on topics I already knew. Sharpest revision workflow I have used for CGL.",
+      "Build sectional tests from weak chapters such as 3D Mensuration or heights and distances, instead of repeating topics you already know.",
   },
   {
     name: "Aishwarya Thakur",
@@ -247,7 +247,7 @@ const RIGHT_COLUMN = [
     dept: "MHA",
     tone: "violet",
     quote:
-      "Selecting any line inside an AI Tutor solution with Ask Tutor to clarify why a step works felt like having a personal mentor beside me at midnight. Cleared every doubt immediately instead of piling up bookmarks.",
+      "Select any line in an AI Tutor reply and ask why it works. Clear the doubt while you’re on it instead of saving it for later.",
   },
 ];
 
@@ -308,10 +308,10 @@ export default function Testimonials() {
       <div className={s.intro}>
         <span className={s.pill}>Testimonials</span>
         <h2 id="testimonials-title" className={s.heading}>
-          Cleared CGL.<br />Stepping into top posts.
+          Aiming for CGL.<br />Study with a plan.
         </h2>
         <p className={s.sub}>
-          Hear from aspirants who turned structured PYQs, mock diagnostics, and spaced review into selections across Income Tax, AAO, MEA, and CBIC.
+          See how you could use PYQs, mock reports and spaced review for different target posts. These are examples, not user reviews.
         </p>
         <div className={s.ctaRow}>
           <Link href="/learn/" className={s.ctaBtn}>
@@ -320,7 +320,7 @@ export default function Testimonials() {
         </div>
       </div>
 
-      <div className={s.marqueeViewport} aria-label="Selected SSC CGL candidate stories">
+      <div className={s.marqueeViewport} aria-label="Study examples by target post">
         <div className={`${s.column} ${s.colUp}`}>
           <div className={s.track}>
             {LEFT_COLUMN.map((item) => (
@@ -351,7 +351,7 @@ export default function Testimonials() {
             onClick={(e) => e.stopPropagation()}
             role="dialog"
             aria-modal="true"
-            aria-label={`Testimonial by ${selected.name}`}
+            aria-label={`Study example for ${selected.name}`}
           >
             <div className={s.modalHead}>
               <div className={s.author}>
