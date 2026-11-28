@@ -3,7 +3,8 @@ import RouteSkeleton from "../../components/RouteSkeleton";
 import Link from "next/link";
 import { metadata as pageMetadata, readExams } from "../../lib/public";
 
-export const metadata = pageMetadata("SSC exam directory", "Browse SSC exam families and official references.", "/exams/");
+export const metadata = pageMetadata("SSC Exams List: Eligibility and Posts",
+  "SSC exams in one list, including CGL, CHSL, MTS, GD, CPO, JE and Stenographer, with eligibility, stages, posts and official SSC references.", "/exams/");
 
 export default function Directory() {
   return <>

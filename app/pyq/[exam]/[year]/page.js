@@ -14,8 +14,8 @@ export async function generateMetadata({ params }) {
   const { exam, y } = await load(params);
   if (!exam) return {};
   const total = y.papers.reduce((s, p) => s + p.questions, 0);
-  return pageMetadata(`SSC ${exam.code} ${y.year} question papers with answers: all shifts`,
-    `All ${y.papers.length} SSC ${exam.code} ${y.year} papers (${n(total)} questions) by date and shift, with answers. Free.`, `/pyq/${exam.slug}/${y.year}/`);
+  return pageMetadata(`SSC ${exam.code} ${y.year} Question Papers by Shift`,
+    `${y.papers.length} SSC ${exam.code} ${y.year} question papers (${n(total)} questions) listed by date and shift. Read the free papers with answers; Premium unlocks the rest.`, `/pyq/${exam.slug}/${y.year}/`);
 }
 
 export default async function YearPage({ params }) {

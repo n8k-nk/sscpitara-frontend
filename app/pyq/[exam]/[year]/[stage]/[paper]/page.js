@@ -19,8 +19,10 @@ export async function generateMetadata({ params, searchParams }) {
   const page = pageOf((await searchParams).page);
   const { data, paper, base } = await load(params, page);
   if (!paper) return {};
-  const meta = pageMetadata(`SSC ${paper.exam} ${paper.stage} ${paperLabel(paper)} question paper with answers`,
-    `Free SSC ${paper.exam} ${paper.stage} question paper held on ${paperLabel(paper)}: ${paper.questions} questions with answers. Sign up to attempt them.`,
+  const meta = pageMetadata(`SSC ${paper.exam} ${paper.stage} ${paperLabel(paper)} Paper`,
+    data.paper_locked
+      ? `SSC ${paper.exam} ${paper.stage} question paper, ${paperLabel(paper)}: ${paper.questions} questions. Available with SSC Pitara Premium.`
+      : `SSC ${paper.exam} ${paper.stage} question paper, ${paperLabel(paper)}: ${paper.questions} questions. Read a free preview with answers; sign up to attempt it.`,
     page > 1 ? withQuery(base, { page }) : base);
   // Locked papers and later pages show visitors placeholders, so keep them out of search results.
   return data.paper_locked || page > 1 ? { ...meta, robots: { index: false, follow: true } } : meta;

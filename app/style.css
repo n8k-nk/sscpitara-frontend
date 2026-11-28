@@ -998,6 +998,7 @@ html[data-theme="dark"] .theme-toggle .moon { display: none; }
     url("/images/pyq-study-desk.webp") right 48% / 64% auto no-repeat, #142138;
 }
 .pyq-cover h1 { color: #fff; max-width: 65%; margin: .3rem 0 .55rem; }
+.page-head .skeleton-title { color: #fff; margin: .3rem 0 .55rem; font-size: clamp(1.75rem, 3.6vw, 2.5rem); font-weight: 700; line-height: 1.15; }
 .pyq-cover .eyebrow { color: #ffca85; }
 .pyq-cover p { color: #e1e8f4; max-width: 58%; }
 .pyq-analysis { display: grid; gap: 1rem; align-items: start; }

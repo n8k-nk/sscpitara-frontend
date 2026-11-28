@@ -6,8 +6,8 @@ import { Crumbs, ExamSwitch, ExamTabs, Topics } from "../../_ui";
 export async function generateMetadata({ params }) {
   const { exam } = await getArchiveExam((await params).exam);
   if (!exam) return {};
-  return pageMetadata(`SSC ${exam.code} previous year questions topic wise: most asked topics`,
-    `See which topics SSC ${exam.code} asks most, year by year, and practise previous year questions topic wise with answers.`, `/pyq/${exam.slug}/topics/`);
+  return pageMetadata(`SSC ${exam.code} Topic Wise Previous Year Questions`,
+    `See which topics appear most in published SSC ${exam.code} previous year papers, year by year. Choose a topic and practise its questions with answers.`, `/pyq/${exam.slug}/topics/`);
 }
 
 export default async function TopicsPage({ params, searchParams }) {

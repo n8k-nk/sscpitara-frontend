@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import OpenTopic from "../../../../components/learn/OpenTopic";
 import { STATE, chanceByYear, lessonDate, minutes, shiftChance } from "../../../../components/learn/bits";
 import { call } from "../../../../lib/server";
+import { metadata as pageMetadata } from "../../../../lib/public";
 
 const loadSubject = cache(async (subject, stageQuery) =>
   call(`learn/cgl/${subject}`, stageQuery)
@@ -14,7 +15,9 @@ export async function generateMetadata({ params, searchParams }) {
   const query = await searchParams;
   const { ok, data } = await loadSubject(subject, query.from === "tier-ii" ? "stage=Tier+II" : "");
   const stage = data?.subject?.stage === "Tier II" ? "Tier II" : "Tier I";
-  return ok ? { title: `${data.subject.title}: SSC CGL ${stage} skills`, alternates: { canonical: `/learn/cgl/${subject}/` } } : { title: "Learn" };
+  return ok ? pageMetadata(`SSC CGL ${data.subject.title}: ${stage} Lessons`,
+    `SSC CGL ${stage} ${data.subject.title} topics and skills, with lessons, how often each is asked in previous year papers, and practice questions.`,
+    `/learn/cgl/${subject}/`) : { title: "Learn" };
 }
 
 const byFrequency = (a, b) => b.probability - a.probability || b.perShift - a.perShift || a.title.localeCompare(b.title);

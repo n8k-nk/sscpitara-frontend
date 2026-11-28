@@ -13,7 +13,11 @@ async function getExam(params) {
 
 export async function generateMetadata({ params }) {
   const exam = await getExam(params);
-  return pageMetadata(`SSC ${exam.code} exam`, `${exam.title}. See the official SSC reference and current preparation coverage.`, `/exams/${exam.slug}/`);
+  return exam.guidance?.qualification
+    ? pageMetadata(`SSC ${exam.code}: Eligibility, Posts, Pay and Stages`,
+      `SSC ${exam.code} (${exam.title}): education and age limits, selection stages, example posts with pay level, and official SSC notice links.`, `/exams/${exam.slug}/`)
+    : pageMetadata(`SSC ${exam.code} Exam: Official Information`,
+      `${exam.title}. Find the official SSC reference for this exam's current cycle, eligibility, dates and paper format.`, `/exams/${exam.slug}/`);
 }
 
 export default async function Exam({ params }) {
@@ -27,7 +31,7 @@ export default async function Exam({ params }) {
     <section><h2>Preparation on SSC Pitara</h2>{cgl ? <>
       <p>Tier I covers Reasoning, General Awareness, Quantitative Aptitude and English Comprehension.</p>
       <p>{coverage.practice} practice questions · {coverage.mocks} full mocks published</p>
-      <div className="actions"><a className="button arrow" href="/study/practice/">Browse CGL mock tests</a><Link className="button secondary" href="/learn/">Browse lessons</Link><Link className="button secondary" href={`/games/${arenaQuery(exam.code)}`}>Play exam drills</Link></div>
+      <div className="actions"><a className="button arrow" href="/study/practice/">Browse CGL mock tests</a><Link className="button secondary" href="/pyq/cgl/">CGL previous year papers</Link><Link className="button secondary" href="/learn/cgl/">CGL lessons</Link><Link className="button secondary" href={`/games/${arenaQuery(exam.code)}`}>Play exam drills</Link></div>
     </> : <p>Use the official reference above for the full syllabus.</p>}
       {!cgl && <Link className="button secondary" href={`/games/${arenaQuery(exam.code)}`}>Play exam drills</Link>}
     </section>

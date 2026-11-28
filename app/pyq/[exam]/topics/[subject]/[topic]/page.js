@@ -20,8 +20,8 @@ export async function generateMetadata({ params, searchParams }) {
   const { exam, row, scope, base } = await load(params, q);
   if (!row) return {};
   const total = exam.topic_stats.reduce((sum, topic) => sum + (topic.topic === row.topic ? topic.questions : 0), 0);
-  const meta = pageMetadata(`${row.topic_name} previous year questions: SSC ${exam.code} (${total} questions with answers)`,
-    `${total} SSC ${exam.code} previous year ${row.topic_name} questions from ${row.subject_name}, with answers. Practise topic wise, free.`,
+  const meta = pageMetadata(`SSC ${exam.code} ${row.topic_name} Previous Year Questions`,
+    `${total} SSC ${exam.code} previous year ${row.topic_name} questions in ${row.subject_name} from published papers. Try free questions with answers.`,
     pageOf(q?.page) > 1 ? withQuery(base, { page: pageOf(q.page) }) : base);
   return scope.year || scope.stage || scope.unanswered ? { ...meta, alternates: { canonical: base }, robots: { index: false, follow: true } } : meta;
 }

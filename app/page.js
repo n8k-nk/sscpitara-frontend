@@ -21,10 +21,19 @@ import Testimonials from "./_home/Testimonials";
 import css from "./home.module.css";
 
 export const metadata = pageMetadata(
-  "SSC exam preparation",
-  "Learn SSC exam topics, practise real questions, revise on schedule, and get help from AI Tutor.",
+  "SSC CGL Preparation with PYQs and Mocks | SSC Pitara",
+  "Prepare for SSC CGL with previous year questions, topic-wise practice, lessons, mock tests and an AI tutor. Start free, with Premium for full access.",
   "/",
 );
+
+// Who publishes the site, for search engines. State only what is true.
+const STRUCTURED_DATA = JSON.stringify({
+  "@context": "https://schema.org",
+  "@graph": [
+    { "@type": "Organization", "@id": "https://www.sscpitara.in/#organization", name: "SSC Pitara", url: "https://www.sscpitara.in/" },
+    { "@type": "WebSite", name: "SSC Pitara", url: "https://www.sscpitara.in/", publisher: { "@id": "https://www.sscpitara.in/#organization" } },
+  ],
+});
 
 function stripMarkdownBold(text) {
   return typeof text === "string" ? text.replace(/\*\*/g, "") : "";
@@ -84,6 +93,7 @@ export default async function Home() {
   const premiumUsers = getPremiumUserCount().toLocaleString("en-IN");
 
   return <div className={css.home}>
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: STRUCTURED_DATA }} />
     <HomeHeader authenticated={false} />
     <main id="main" className={css.main}>
       <section className={`${css.wrap} ${css.productHero}`} aria-labelledby="home-title">
