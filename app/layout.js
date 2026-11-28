@@ -4,6 +4,7 @@ import { session } from "../lib/server";
 import ThemeToggle from "../components/ThemeToggle";
 import Capture from "../components/Capture";
 import Analytics from "../components/Analytics";
+import ScrollToTop from "../components/ScrollToTop";
 import AppShell from "../components/AppShell";
 import SiteFooter from "../components/SiteFooter";
 import ExamPicker from "../components/ExamPicker";
@@ -48,6 +49,7 @@ export default async function Layout({ children }) {
   };
   return <html lang="en" data-theme={theme} suppressHydrationWarning><body data-clarity-mask={user.authenticated ? "true" : undefined}>
     <Capture />
+    <Suspense fallback={null}><ScrollToTop /></Suspense>
     {indexable && <Analytics ga={process.env.GA_ID?.trim()} clarity={process.env.CLARITY_ID?.trim()} />}
     <a className="skip" href="#main">Skip to content</a>
     <AppShell

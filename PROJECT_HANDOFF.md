@@ -178,9 +178,11 @@ The home page no longer shows a calculated premium user count. The testimonial s
 
 Google Analytics 4 and Microsoft Clarity load from `components/Analytics.js` when Vercel has `GA_ID` and `CLARITY_ID` and the site is indexable. They are skipped on admin, password reset, email verification and shared tutor URLs. Signed-in page text is masked for Clarity. Events: `sign_up` (email only; Google sign-up is not recorded), `claim_premium`, `begin_checkout`, `purchase`. The privacy policy has an Analytics section. There is no cookie consent prompt. Verified with a production build and a browser run using test IDs with external requests blocked. Next: the owner creates both accounts, sets the IDs and redeploys.
 
-## Phone fixes (28 November 2026, not yet committed or deployed)
+## Phone fixes (28 November 2026; pushed in 7cb6e95, scroll-to-top not yet committed)
 
 A running test hides the phone bottom bar. Previous and Next in a test step through one section at a time, then move to the next section; some papers (CGL 28 October 2026, all three shifts) interleave sections in question order, and a few questions there appear to carry the wrong section name (Shift 1 shows 23 Reasoning, 27 Quant). The question data was not changed. Current affairs swipes by finger and has no Undo. Learn search has an icon button inside the box. PYQ headers no longer link the question number. The AI hint shows "Explaining…"; feedback after an attempt shows "Getting feedback…". The game footer stays below the screen while scoring. Verified with a production build and a 390px touch browser run on the local database.
+
+`components/ScrollToTop.js` opens each new page (path or `?page=` change) at the top; Back, Forward, anchors and filter changes keep their position.
 
 ## Next proposed work
 
