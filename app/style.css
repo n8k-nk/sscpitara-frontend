@@ -901,6 +901,7 @@ details[open] > .pyq-year-heading::before { background: var(--accent); }
 
 .mock-frame { position: fixed; z-index: 100; inset: 0; overflow: auto; overscroll-behavior: contain; background: #0c0c0e; color: var(--text); }
 .mock-inner { display: flow-root; height: 100%; }
+body:has(.mock-frame) .bottom-nav { display: none; }
 .mock-inner > .notice { width: min(100% - 2rem, 56rem); margin: 1rem auto; }
 .mock-frame fieldset { min-width: 0; }
 .mock-frame :is(.katex-display, table) { display: block; max-width: 100%; overflow-x: auto; }
@@ -1058,9 +1059,10 @@ html[data-theme="dark"] .theme-toggle .moon { display: none; }
 .subject-progress .split-meter { height: .7rem; margin: .55rem 0 0; }
 .topic-search { position: relative; z-index: 2; margin: 0 0 1.75rem; }
 .topic-search-label { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
-.topic-search-row { display: flex; gap: .5rem; align-items: stretch; }
-.topic-search-row input { flex: 1; min-width: 0; width: auto; margin: 0; background: var(--sunken); }
-.topic-search-row button { flex: none; }
+.topic-search-row { position: relative; display: flex; }
+.topic-search-row input { flex: 1; min-width: 0; width: 100%; min-height: 2.75rem; margin: 0; padding-right: 3.25rem; background: var(--sunken); }
+.topic-search-row input::-webkit-search-cancel-button { margin-right: .25rem; }
+.topic-search-row button { position: absolute; inset: 0 0 0 auto; display: grid; place-items: center; width: 3rem; min-height: 0; margin: 0; padding: 0; border: 0; background: transparent; color: var(--accent); }
 .topic-hits { position: absolute; z-index: 3; top: calc(100% + .4rem); left: 0; right: 0; max-height: min(22rem, 60vh); border: 1px solid var(--line-strong); border-radius: var(--radius); background: var(--bg); overflow: auto; }
 .topic-hits ul { list-style: none; margin: 0; padding: 0; }
 .topic-hits li + li { border-top: 1px solid var(--line); }
@@ -1069,7 +1071,6 @@ html[data-theme="dark"] .theme-toggle .moon { display: none; }
 .topic-hits .where, .topic-hits .kind { color: var(--muted); font-size: .8rem; font-weight: 600; }
 .topic-hits .where { display: block; font-weight: 500; }
 .topic-hits > p { margin: 0; padding: .75rem 1rem; }
-@media (max-width: 480px) { .topic-search-row { flex-wrap: wrap; } .topic-search-row button { width: 100%; } }
 .path-list { list-style: none; margin: 0; padding: 0; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
 .path-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: .75rem 1rem; padding: .85rem 1.1rem; background: var(--bg); }
 .path-row + .path-row { border-top: 1px solid var(--line); } .path-row:hover { background: var(--alt); }
@@ -1421,11 +1422,6 @@ main .route-skeleton { width: 100%; margin: 0; }
 .learn-placeholder .plan-cta { min-height: 4.2rem; }
 .learn-overview .learn-progress { min-height: 7.25rem; }
 .learn-placeholder .topic-search-row .skeleton-line { flex: 1; height: 2.75rem; margin: 0; }
-.learn-placeholder .topic-search-row .skeleton-line + .skeleton-line { flex: 0 0 5.5rem; }
-@media (max-width: 480px) {
-  .learn-placeholder .topic-search-row .skeleton-line { flex: 1 0 100%; }
-  .learn-placeholder .topic-search-row .skeleton-line + .skeleton-line { flex-basis: 100%; }
-}
 .learn-placeholder .skeleton-line { margin-block: .25rem; }
 .learn-placeholder .section-head .skeleton-line { height: 1.25rem; width: 7rem; }
 @media (max-width: 560px) {

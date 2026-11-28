@@ -88,7 +88,14 @@ export default function Runner({ data, renderedByPos, stem, passage, options }) 
   const currentSectionName = activeItem?.section_name ?? data.section_name;
   const currentPracticePhase = activeItem?.practice_phase ?? data.practice_phase;
 
-  const nextPos = data.positions.some((p) => p.position === position + 1) ? position + 1 : null;
+  // A past paper can interleave sections (Q1 Reasoning, Q2 Quant, Q4 Reasoning), so a test steps through one section at a time.
+  const sectionNames = data.mock ? data.positions.map((p) => p.section_name) : [];
+  const order = [...data.positions]
+    .sort((a, b) => sectionNames.indexOf(a.section_name) - sectionNames.indexOf(b.section_name))
+    .map((p) => p.position);
+  const at = order.indexOf(position);
+  const nextPos = order[at + 1] ?? null;
+  const prevPos = order[at - 1] ?? null;
   const draftKey = (pos) => `ssc-answer:${id}/${pos}`;
   const remember = (pos, value) => {
     try { value ? sessionStorage.setItem(draftKey(pos), JSON.stringify(value)) : sessionStorage.removeItem(draftKey(pos)); } catch { /* storage may be disabled */ }
@@ -338,7 +345,6 @@ export default function Runner({ data, renderedByPos, stem, passage, options }) 
     section.forEach((p) => { counts[stateOf(p)] += 1; });
     const [exam, tier, ...sitting] = data.title.split(" · ");
     const next = nextPos && href(nextPos);
-    const previous = data.positions.some((p) => p.position === position - 1);
     return <div className={styles.shell}>
       <header className={styles.header}>
         <div><h1>{[exam, tier].filter(Boolean).join(" · ")}</h1>
@@ -388,7 +394,7 @@ export default function Runner({ data, renderedByPos, stem, passage, options }) 
         </aside>
       </div>
       <footer className={styles.actions}>
-        {previous ? <a className={styles.previous} href={href(position - 1)} onClick={(event) => go(event, href(position - 1), position - 1)}>‹ Previous</a>
+        {prevPos ? <a className={styles.previous} href={href(prevPos)} onClick={(event) => go(event, href(prevPos), prevPos)}>‹ Previous</a>
           : <button className={styles.previous} type="button" disabled>‹ Previous</button>}
         <button className={styles.clear} type="button" disabled={choice.selected == null} onClick={() => change({ selected: null })}>Clear response</button>
         <button className={styles.review} type="button" onClick={(event) => {

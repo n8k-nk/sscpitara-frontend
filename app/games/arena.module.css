@@ -267,9 +267,10 @@
 .numeric input { min-width: 0; width: 100%; padding: .35rem .65rem; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--bg); color: var(--ink); font-size: 1rem; }
 .arena .skip { display: flex; min-height: 2.75rem; margin: .25rem 0 0 auto; padding: .3rem .5rem; border-color: transparent; background: transparent; color: var(--muted); font-size: .875rem; }
 .arena .skip:hover { color: var(--ink); text-decoration: underline; }
-.pending { display: grid; align-items: center; justify-items: start; min-height: 2.75rem; }
+.pending { display: grid; align-content: center; justify-items: center; min-height: 18rem; text-align: center; }
 .pending p { margin: 0; color: var(--muted); }
 .error { margin: .45rem 0 0; color: var(--danger); }
+.round:not(.levelMap) { min-height: calc(100svh - var(--shell-bar-height, 4rem) - var(--bottom-nav-height, 0px)); }
 
 .result h2 { margin: .2rem 0 .45rem; font-size: clamp(2.1rem, 6vw, 3rem); line-height: 1; }
 .result h2 span { color: var(--muted); font-size: .55em; font-weight: 550; }

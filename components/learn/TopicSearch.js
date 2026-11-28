@@ -37,7 +37,9 @@ export default function TopicSearch({ items }) {
       <input id="learn-search" type="search" value={query} autoComplete="off" placeholder="Percentage, coding, polygons…"
         aria-autocomplete="list" aria-controls={listId} aria-expanded={typed} aria-activedescendant={typed && hits[index] ? `${listId}-${index}` : undefined}
         onChange={(e) => { setQuery(e.target.value); setActive(0); }} onKeyDown={onKeyDown} />
-      <button type="submit">Search</button>
+      <button type="submit" aria-label="Search">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5" /><path d="m16 16 4.5 4.5" /></svg>
+      </button>
     </div>
     {typed && <div className="topic-hits" id={listId} role="listbox" aria-label="Matching chapters and topics">
       {hits.length ? <ul>{hits.map((hit, i) => <li key={hit.href} role="none">

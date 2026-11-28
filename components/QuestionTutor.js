@@ -9,6 +9,7 @@ export default function QuestionTutor({ mode, question, attempt, position, anon 
   const [expanded, setExpanded] = useState(false);
   const feedbackId = useId();
   const label = mode === "hint" ? "Ask AI" : "Explain my mistake";
+  const noun = mode === "hint" ? "explanation" : "feedback";
 
   async function ask() {
     if (anon) {
@@ -35,7 +36,7 @@ export default function QuestionTutor({ mode, question, attempt, position, anon 
     <div className="pyq-ask">
       <button type="button" className="secondary" disabled={state.busy} onClick={ask}
         aria-expanded={state.text ? expanded : undefined} aria-controls={state.text ? feedbackId : undefined}>
-        {state.busy ? "Getting feedback…" : state.text ? (expanded ? "Hide AI feedback" : "Show AI feedback") : label}
+        {state.busy ? (mode === "hint" ? "Explaining…" : "Getting feedback…") : state.text ? `${expanded ? "Hide" : "Show"} AI ${noun}` : label}
       </button>
     </div>
     {state.text && <div id={feedbackId} className="notice tutor-feedback" role="status" hidden={!expanded}>

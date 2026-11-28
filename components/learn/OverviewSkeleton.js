@@ -16,7 +16,7 @@ export default function OverviewSkeleton({ subjects = 4, resources = true, showH
       </div>
       <div className="section-head"><span className="skeleton-line" /></div>
       <div className="topic-search"><div className="topic-search-row">
-        <span className="skeleton-line" /><span className="skeleton-line" />
+        <span className="skeleton-line" />
       </div></div>
       <div className="grid subject-grid">
         {Array.from({ length: subjects }, (_, index) => <div className="link-card subject-card" data-subject="" key={index}>

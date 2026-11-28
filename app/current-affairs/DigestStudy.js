@@ -35,7 +35,6 @@ export default function DigestStudy({ date, lang, quote, items, archive, account
   const card = items[index];
   const alreadyRead = card && learned.includes(card.position);
   const [view, setView] = useState("feed");
-  const [lastRead, setLastRead] = useState(null);
   const previousSheet = useRef(null);
   const currentSheet = useRef(null);
   const motion = useRef(null);
@@ -67,10 +66,7 @@ export default function DigestStudy({ date, lang, quote, items, archive, account
 
   function advance() {
     if (!card) return;
-    if (!alreadyRead) {
-      changeRead(card, true);
-      setLastRead(card.position);
-    }
+    if (!alreadyRead) changeRead(card, true);
     setCursor(index + 1);
   }
 
@@ -112,7 +108,7 @@ export default function DigestStudy({ date, lang, quote, items, archive, account
   }
 
   function startDrag(event) {
-    if (!event.isPrimary || event.button !== 0 || event.target.closest("button") || motion.current || pending.current) return;
+    if (!event.isPrimary || event.button !== 0 || event.target.closest("button") || motion.current) return;
     gesture.current = { id: event.pointerId, x: event.clientX, y: event.clientY, distance: 0 };
     event.currentTarget.setPointerCapture(event.pointerId);
   }
@@ -132,6 +128,8 @@ export default function DigestStudy({ date, lang, quote, items, archive, account
   }
 
   function finishDrag(event) {
+    // A finger first captures the text it touched; handing capture to the card must not end the swipe.
+    if (event.type === "lostpointercapture" && event.target !== event.currentTarget) return;
     const start = gesture.current;
     if (start?.id !== event.pointerId) return;
     const dx = event.clientX - start.x;
@@ -192,12 +190,6 @@ export default function DigestStudy({ date, lang, quote, items, archive, account
         </div>
         <div className={styles.controls}>
           <span>{read.length} of {items.length} read</span>
-          {lastRead !== null && learned.includes(lastRead) && <button type="button" onClick={() => {
-            const undo = items.findIndex(item => item.position === lastRead);
-            changeRead(items[undo], false);
-            setCursor(undo);
-            setLastRead(null);
-          }}>Undo</button>}
           {index > 0 && <button type="button" onClick={() => navigate(-1)}><span aria-hidden="true">←</span> Previous</button>}
           {card && <button className={styles.primary} type="button" onClick={() => navigate(1)}>{alreadyRead ? "Next" : "Mark as read"} <span aria-hidden="true">→</span></button>}
         </div>

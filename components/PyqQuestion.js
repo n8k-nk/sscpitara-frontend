@@ -11,7 +11,7 @@ const TYPE = { multiple: "More than one correct", numeric: "Numerical answer", t
 function Locked({ q }) {
   const p = q.paper;
   return <article className="pyq locked" id={`q${q.id}`}>
-    <header className="pyq-meta"><span className="code">{p.title}</span><span className="badge">{q.subject}</span><span className="muted">{q.topic}</span><Link className="muted" href={`/pyq/q/${q.id}/`}>Q{q.number}</Link></header>
+    <header className="pyq-meta"><span className="code">{p.title}</span><span className="badge">{q.subject}</span><span className="muted">{q.topic}</span></header>
     <div className="pyq-blur" aria-hidden="true">
       <p><strong>Q{q.number}.</strong> Sign up to read this question. The text shown here is only a placeholder.</p>
       <ul className="pyq-options">{Array.from({ length: q.option_count || 4 }, (_, i) => <li key={i}><span className="pyq-opt"><b>{"ABCDEFGH"[i]}</b> Placeholder option text</span></li>)}</ul>
@@ -79,7 +79,6 @@ function Live({ q, viewer, stem, options, passage, solution, hindi, skillPractic
       <Link className="code" href={`/pyq/${q.paper.path}/`}>{q.paper.title}</Link>
       <span className="badge">{q.subject}</span>
       <span className="muted">{q.topic}{q.subtopic && ` › ${q.subtopic}`}</span>
-      <Link className="muted" href={`/pyq/q/${q.id}/`}>Q{q.number} link</Link>
       {q.difficulty && <span className="badge">{q.difficulty}</span>}
       {TYPE[q.type] && <span className="badge">{TYPE[q.type]}</span>}
     </header>
